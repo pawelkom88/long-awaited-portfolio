@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not here</title>
+<meta name="color-scheme" content="light dark">
+<script>
+// before first paint: re-apply a theme the switch pinned, so there is no flash
+try {
+  const scheme = localStorage.getItem("color-scheme");
+  if (scheme) {
+    document.documentElement.dataset.theme = scheme;
+    document.querySelector('meta[name="color-scheme"]').content = scheme;
+  }
+} catch {}
+</script>
+<link rel="stylesheet" href="ink.css">
+<link rel="stylesheet" href="rub.css">
+<style>
+.lost { min-height: 80vh; }
+.stage-lost { aspect-ratio: 2520 / 720; max-width: 58rem; }
+.stage-lost .note-lost { left: 76%; top: 30%; opacity: 0; transition: opacity .4s; }
+.stage-lost.found-nothing .note-lost { opacity: 1; }
+.note-lost .arrow { position: absolute; right: 100%; top: .5em; width: 4rem; margin-right: .4rem; transform: scale(-1, 1) rotate(-12deg); }
+.home { margin-top: 3rem; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="boil-a"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="1"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+  <filter id="boil-b"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+  <filter id="boil-c"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="13"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+</svg>
+
+<header>
+  <a href="index.html">ink spike</a>
+  <button type="button" class="sound" id="sound" aria-label="Music" aria-pressed="false">tune<span class="ink pencil strike" style="--src:url(../pencil/strike.webp); --ar:320/42"></span></button>
+  <button type="button" class="switch" id="theme" aria-label="Night" aria-pressed="false">
+    <span class="rays pencil boil"><span class="ink" style="--src:url(../svg/bulb-rays.svg); --ar:654/661"></span></span>
+    <span class="bulb boil"><span class="ink" style="--src:url(../svg/bulb.svg); --ar:302/1806"></span></span>
+    <span class="cord"><span class="ink" style="--src:url(../svg/pull-cord.svg); --ar:158/2086"></span></span>
+    <span class="hint">pull</span>
+  </button>
+</header>
+<span class="ink rubber" aria-hidden="true" style="--src:url(../svg/rubber.svg); --ar:535/455"></span>
+
+<main>
+  <section class="lost" aria-labelledby="lost-h">
+    <h1 id="lost-h">This page isn't in the drawer.</h1>
+    <p class="soft">It may have moved, or it never existed.</p>
+
+    <div class="stage stage-lost" id="lost" role="img" aria-label="The figure searches a drawer and holds it up, empty">
+      <div class="boil" style="position:absolute; inset:0">
+        <span class="ink pose" id="searching" style="--src:url(../svg/pose-drawer.svg); --ar:2520/720; top:0"></span>
+        <span class="ink pose" id="empty" hidden style="--src:url(../svg/pose-empty-drawer.svg); --ar:2520/720; top:0"></span>
+      </div>
+      <p class="note note-lost"><span class="ink arrow" style="--src:url(../pencil/arrow.webp); --ar:199/112"></span>nope, empty</p>
+    </div>
+
+    <p class="home"><a href="index.html">Back to the start</a></p>
+  </section>
+</main>
+
+<script type="module">
+// rummage for a moment, then hold the empty drawer up
+const lost = document.getElementById("lost");
+const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const giveUp = () => {
+  document.getElementById("searching").hidden = true;
+  document.getElementById("empty").hidden = false;
+  lost.classList.add("found-nothing");
+};
+setTimeout(giveUp, still ? 0 : 2200);
+</script>
+<script type="module" src="theme.js"></script>
+<script type="module" src="sound.js"></script>
+</body>
+</html>

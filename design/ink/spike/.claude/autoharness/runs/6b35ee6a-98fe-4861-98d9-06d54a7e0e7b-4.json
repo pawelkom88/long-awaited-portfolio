@@ -1,0 +1,28 @@
+{
+  "run_id": "6b35ee6a-98fe-4861-98d9-06d54a7e0e7b-4",
+  "verdicts": [
+    {
+      "action": "create",
+      "name": "scroll-driven-animations",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "screenshot-scroll-position-testing",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "css-cascade-supports-media",
+      "ok": false,
+      "findings": [
+        "altitude"
+      ],
+      "notes": []
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+/* Paper sampled from raw/broom-v1.jpg.
+   grain.webp: neutral grey fibre tile (800px, seamless), multiplied over --paper
+   so the same tile works for any paper tint (day, dusk, night).
+   specks.png: sparse ink specks, 1210px period so it never lines up with grain. */
+:root {
+  --paper: #e8e4dc;
+  --paper-edge: #dcd7ce;
+  --ink: #2a2521;
+  --pencil: #b0311f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #1e2430;
+    --paper-edge: #161b25;
+    --ink: #e6e0d4;
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #1e2430;
+  --paper-edge: #161b25;
+  --ink: #e6e0d4;
+}
+
+body {
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    url("specks.png"),
+    radial-gradient(ellipse 120% 90% at 50% 35%, transparent 40%, var(--paper-edge)),
+    url("grain.webp");
+  background-size: 1210px, 100% 100%, 800px;
+  background-attachment: fixed;
+  background-blend-mode: normal, normal, multiply;
+}

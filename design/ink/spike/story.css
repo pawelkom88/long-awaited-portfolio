@@ -1,0 +1,219 @@
+/* The story layer on top of ink.css: the lift, the CV sheet on its string, the small planet.
+   Every resting state here is the finished drawing. Scroll timelines only add the way there,
+   so reduced motion and browsers without them (Firefox) read the same page, already drawn. */
+
+:root {
+  --sheet: color-mix(in oklab, var(--paper), white 38%);
+  --abyss: #161a23;
+  --typed: "American Typewriter", "Courier Prime", "Courier New", ui-monospace, monospace;
+  /* height of the ink-wash edge where the paper sinks into night (wash-*.webp are 1200x360) */
+  --wash: clamp(9rem, 28vw, 22.5rem);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --sheet: color-mix(in oklab, var(--paper), white 5%); --abyss: #0d1016; }
+}
+:root[data-theme="dark"] { --sheet: color-mix(in oklab, var(--paper), white 5%); --abyss: #0d1016; }
+
+html { overflow-x: clip; }
+.lede { font-size: 1.2rem; margin: 1.25rem 0 0; }
+.hand { font-style: italic; color: var(--pencil); }
+.typed { font-family: var(--typed); }
+h3 { font-weight: 400; font-size: 1.15rem; margin: 0; }
+
+/* little truths about the page, each shown only where it is true */
+.aside { display: none; }
+@supports not ((animation-timeline: view()) and (animation-range: entry)) { .aside-nosupport { display: block; } }
+@media (prefers-reduced-motion: reduce) { .aside-still { display: block; } }
+
+/* ---------- the lift: frames stepped by the scroll through a tall section ---------- */
+.magic .pin { position: relative; }
+/* the pin's box: its content, not the whole screen, so it never parks blank paper above or below */
+/* measured: the text plus a stage a third of the width tall, capped where the stage stops growing */
+.magic { --pin-h: min(100vh, 11.5rem + 34vw, 34rem); --steps: 110vh; }
+.note-nojs { left: 4%; bottom: -2.2rem; }
+
+/* ---------- what I hold on to ---------- */
+.care { margin-top: 14vh; }
+.values { list-style: none; padding: 0; margin: 3rem 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 3rem clamp(2rem, 5vw, 4rem); }
+.value .obj { display: block; width: var(--w); height: 4.5rem; display: grid; align-items: end; margin-bottom: 1.1rem; }
+.value p { margin: .4rem 0 0; color: var(--ink-soft); font-size: 1.02rem; }
+
+/* ---------- the line: a CV draft pinned to the kite string ---------- */
+.line { margin-top: 26vh; }
+.sheet {
+  --line-x: 2.6rem;
+  position: relative;
+  max-width: 54rem;
+  margin: 3.5rem auto 0;
+  padding: 2.5rem clamp(1.25rem, 4vw, 3rem) 3rem calc(var(--line-x) + 2.4rem);
+  background: var(--sheet) url("grain.webp") 0 0 / 800px;
+  background-blend-mode: multiply;
+  box-shadow: 0 1px 0 var(--paper-edge), 0 22px 44px -28px color-mix(in oklab, var(--ink) 55%, transparent);
+}
+.sheet .string {
+  position: absolute; left: calc(var(--line-x) - .75rem); top: 1rem;
+  width: 1.5rem; height: calc(100% + 13rem); overflow: visible; pointer-events: none;
+}
+.sheet .string path { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+
+.sheet-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; padding: 0; margin: 0 0 2.5rem; color: var(--ink); font-size: 1rem; }
+.sheet-head p { margin: 0; }
+.sheet-head .typed { letter-spacing: .04em; }
+.sheet-head .hand { rotate: -3deg; }
+
+.entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 13rem);
+  column-gap: 2.5rem;
+  padding-bottom: 3rem;
+}
+.entry > :not(.margin, .knot) { grid-column: 1; }
+.entry .when { margin: 0 0 .3rem; font-family: var(--typed); font-size: .85rem; color: var(--ink-soft); letter-spacing: .03em; }
+.entry .body { margin: .6rem 0 0; font-size: .98rem; line-height: 1.7; max-width: none; }
+.entry .margin { grid-column: 2; grid-row: 1 / span 3; align-self: center; margin: 0; font-size: 1.1rem; line-height: 1.35; rotate: -2deg; }
+.entry .knot { position: absolute; left: -2.4rem; top: .25rem; width: 2.6rem; translate: -50% 0; rotate: 90deg; }
+.entry-next .body, .entry-next h3 { color: var(--pencil); }
+.entry-next .margin { align-self: end; }
+.cursor { display: inline-block; width: 1.5px; height: 1.1em; margin-left: .15em; vertical-align: -.15em; background: currentColor; animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.sheet > .aside { margin: 0; font-size: .95rem; }
+
+/* pencil marks over typed words */
+.m { position: relative; white-space: nowrap; }
+.m > .ink { position: absolute; color: var(--pencil); aspect-ratio: auto; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; pointer-events: none; }
+.m-under > .ink { left: -3%; right: -3%; bottom: -.4em; height: .45em; }
+.m-strike > .ink { left: -3%; right: -3%; top: .35em; height: .55em; }
+.m-strike { color: var(--ink-soft); }
+.m-circle > .ink { inset: -.45em -.5em -.4em; }
+.m-tick { white-space: normal; }
+.m-tick > .ink { position: relative; display: inline-block; width: 1.3em; height: 1.3em; margin-left: .25em; vertical-align: -.3em; }
+
+/* ---------- the next chapter: a very small planet at night ---------- */
+.next {
+  --ink: #e6e0d4; --ink-soft: #a39b8e; --pencil: #e0775f;
+  --bleed: calc(var(--wash) * .75);
+  isolation: isolate;
+  margin-top: calc(var(--bleed) + 8vh);
+  color: var(--ink);
+  padding-block: 10vh;
+}
+/* full bleed night, painted on: an ink-wash edge soaks into the paper at both ends.
+   The edges hang outside the section, so the scene itself is always full night. */
+.next::before {
+  --edges:
+    url("wash-top.webp") 0 0 / auto var(--wash) repeat-x,
+    linear-gradient(#000 0 0) 0 calc(var(--wash) - 1px) / 100% calc(100% - 2 * var(--wash) + 2px) no-repeat,
+    url("wash-bottom.webp") 0 100% / auto var(--wash) repeat-x;
+  content: ""; position: absolute; z-index: -1; top: calc(-1 * var(--bleed)); bottom: calc(-1 * var(--bleed)); left: 50%; width: 100vw; translate: -50% 0;
+  background: var(--abyss);
+  -webkit-mask: var(--edges);
+  mask: var(--edges);
+}
+.scene { display: grid; justify-items: center; gap: 2rem; text-align: center; }
+.caption h2 { font-size: clamp(1.8rem, 3.4vw, 2.6rem); margin: .3rem 0; }
+.caption p { margin-inline: auto; }
+.kicker { font-family: var(--typed); font-size: .85rem; letter-spacing: .06em; color: var(--pencil); margin: 0; }
+.sky { width: min(100%, 60rem); }
+.sky svg { display: block; width: 100%; height: auto; max-height: 72vh; }
+.sky path, .sky circle { fill: none; stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.sky .faint { stroke-width: 1.2; opacity: .7; }
+/* stars: four point sparkles, soft glowing dots, and far dust */
+.sky #glow stop { stop-color: var(--ink); }
+.sky .glow-in { stop-opacity: .5; } .sky .glow-mid { stop-opacity: .16; } .sky .glow-out { stop-opacity: 0; }
+.sky .dust { fill: var(--ink); stroke: none; opacity: .4; }
+.sky .layer { transform-box: view-box; transform-origin: 470px 540px; }
+/* page rules do not reach inside <use>, so the sparkle and dot inherit their ink from it */
+.sky .star > use { fill: var(--ink); stroke: none; transform-box: fill-box; transform-origin: center; }
+.layer.far { --py: 14px; --ps: 1.04; }
+.layer.mid { --py: 40px; --ps: 1.16; }
+.layer.near { --py: 90px; --ps: 1.4; }
+.sky .cam { transform-box: view-box; transform-origin: 470px 540px; }
+.scene > .aside { margin: 0; }
+
+/* ---------- the weekend shelf, smaller now: a postscript ---------- */
+.work { margin-top: calc(var(--wash) * .75 + 10vh); }
+.work h2 .hand { margin-right: .35rem; }
+
+/* how high the kite is: a pencil scale down the left edge */
+.altitude {
+  display: none; position: fixed; z-index: 2; left: .9rem; top: 30vh; width: .7rem; height: 40vh; pointer-events: none;
+  background: repeating-linear-gradient(to top, var(--pencil) 0 1px, transparent 1px 2rem) center / .45rem 100% no-repeat;
+  opacity: .55;
+}
+.altitude-kite { position: absolute; left: 50%; bottom: 0; width: 1.1rem; margin-left: -.55rem; overflow: visible; }
+.altitude-kite path { fill: none; stroke: var(--pencil); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- scroll timelines: only the way there ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    .aside-css { display: block; }
+
+    /* the lift: three frames swapped by the scroll through a tall section */
+    /* the pin sits centred and holds for --steps of scroll. The frames run over exactly that window,
+       as cover offsets: it catches when the section top reaches the pin's top line (cover 50vh + pin/2)
+       and lets go when the section bottom reaches the pin's bottom line, just as "there it goes" lands */
+    .magic { --catch: 50vh + var(--pin-h) / 2; height: calc(var(--pin-h) + var(--steps)); view-timeline: --lift; }
+    .magic .pin { position: sticky; top: calc(50vh - var(--pin-h) / 2); min-height: var(--pin-h); display: grid; align-content: center; }
+    .care { margin-top: 4rem; }
+    .stage-magic { cursor: auto; }
+    .stage-magic .ink { visibility: visible; }
+    .stage-magic .ink:nth-child(1) { animation: frame-a linear both; animation-timeline: --lift; animation-range: cover calc(var(--catch)) cover calc(var(--catch) + var(--steps)); }
+    .stage-magic .ink:nth-child(2) { animation: frame-b linear both; animation-timeline: --lift; animation-range: cover calc(var(--catch)) cover calc(var(--catch) + var(--steps)); }
+    .stage-magic .ink:nth-child(3) { animation: frame-c linear both; animation-timeline: --lift; animation-range: cover calc(var(--catch)) cover calc(var(--catch) + var(--steps)); }
+    .note-kite { transition: none; animation: frame-note linear both; animation-timeline: --lift; animation-range: cover calc(var(--catch)) cover calc(var(--catch) + var(--steps)); }
+    @keyframes frame-a { 0%, 30% { opacity: 1; } 31%, 100% { opacity: 0; } }
+    @keyframes frame-b { 0%, 30% { opacity: 0; } 31%, 62% { opacity: 1; } 63%, 100% { opacity: 0; } }
+    @keyframes frame-c { 0%, 62% { opacity: 0; } 63%, 100% { opacity: 1; } }
+    @keyframes frame-note { 0%, 72% { opacity: 0; } 85%, 100% { opacity: 1; } }
+
+    /* the string drops down the sheet as you read it */
+    .sheet .string { animation: drop linear both; animation-timeline: view(); animation-range: cover 45vh cover calc(100% - 45vh); }
+    @keyframes drop { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+
+    /* each entry: typed first, then the knot, then the pencil goes over it */
+    .entry { view-timeline: --entry; }
+    .entry > .typed, .entry > .when, .entry-next > h3, .entry-next > .body { animation: type linear both; animation-timeline: --entry; animation-range: entry 10% entry 70%; }
+    .entry .knot { animation: tie linear both; animation-timeline: --entry; animation-range: entry 40% entry 90%; }
+    .entry .margin { animation: write linear both; animation-timeline: --entry; animation-range: entry 70% cover 45%; }
+    .entry .m > .ink { animation: mark linear both; animation-timeline: --entry; animation-range: entry 80% cover 50%; }
+    @keyframes type { from { opacity: 0; translate: 0 .6rem; } }
+    @keyframes tie { from { scale: 0; rotate: 40deg; } }
+    @keyframes write { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0 -10% 0 0); } }
+    @keyframes mark { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+    /* the planet: the camera pulls back, the stars come out, then the words */
+    /* the planet: the camera pulls back, the stars come out, then the words; it lets go soon after they land */
+    .next { height: 215vh; padding-block: 0; view-timeline: --next; }
+    .scene { position: sticky; top: 0; height: 100vh; align-content: center; }
+    .sky .cam { animation: pull-back linear both; animation-timeline: --next; animation-range: contain 0% contain 62%; }
+    .sky :is(.star, .dust) { animation: star linear both; animation-timeline: --next; animation-range: contain calc(var(--d) * 100%) contain calc(var(--d) * 100% + 12%); }
+    /* parallax: each depth of sky settles at its own speed, the near stars travel furthest */
+    .sky .layer { animation: depth linear both; animation-timeline: --next; animation-range: contain 0% contain 70%; }
+    .caption { animation: type linear both; animation-timeline: --next; animation-range: contain 58% contain 80%; }
+    @keyframes pull-back { from { transform: scale(2.6); } to { transform: scale(1); } }
+    @keyframes star { from { opacity: 0; } }
+    @keyframes depth { from { translate: 0 var(--py); scale: var(--ps); } }
+  }
+  /* the stars twinkle on the clock, not the scroll, each on its own beat */
+  .sky .star > use { animation: twinkle var(--tw, 4s) ease-in-out var(--tdel, 0s) infinite; }
+  @keyframes twinkle { 0%, 100% { opacity: 1; scale: 1; } 45% { opacity: .35; scale: .72; } 60% { opacity: .8; scale: .95; } }
+  /* how high the kite is */
+  @supports (animation-timeline: scroll()) {
+    .altitude { display: block; }
+    .altitude-kite { animation: climb linear both; animation-timeline: scroll(root); }
+    @keyframes climb { from { translate: 0 0; } to { translate: 0 calc(-40vh + 1.6rem); } }
+  }
+}
+@media (max-width: 48rem) {
+  .altitude { display: none !important; }
+  .magic { --steps: 90vh; }
+  .sheet { --line-x: 1.4rem; padding-left: calc(var(--line-x) + 1.6rem); }
+  .entry { grid-template-columns: minmax(0, 1fr); }
+  .entry .margin { grid-column: 1; grid-row: auto; margin-top: .9rem; }
+  .entry .knot { left: -1.6rem; width: 2rem; }
+  .shelf { display: grid; grid-template-columns: repeat(2, 1fr); justify-items: center; row-gap: 9rem; padding: 0; }
+  .shelf + .thread { margin-top: 7rem; }
+  .thing .label { white-space: normal; width: 9rem; }
+  .snag .snag-note { left: auto; right: 0; translate: none; }
+}

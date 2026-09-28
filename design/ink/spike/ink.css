@@ -9,6 +9,8 @@
   --pencil: #b0311f;
   --measure: 34rem;
   --gutter: clamp(1rem, 5vw, 4rem);
+  /* the one gap between chapters of the page */
+  --section-gap: clamp(6rem, 4rem + 8vw, 11rem);
   --paper: color-mix(in oklab, var(--day), var(--dusk) calc(var(--t) * 100%));
   color-scheme: light dark;
 }
@@ -125,6 +127,9 @@ p { max-width: var(--measure); }
 
 /* ---------- stage: one ground line, everything rests on it ---------- */
 .stage { position: relative; margin-top: 6vh; }
+/* the boil wrapper's filter makes it the poses' containing block, so it must span the stage
+   or every registered top: % offset resolves against zero height */
+.stage > .boil { position: absolute; inset: 0; }
 .pose { position: absolute; left: 0; width: 100%; transition: opacity .2s; }
 .pose[hidden] { display: block; opacity: 0; pointer-events: none; }
 
@@ -145,8 +150,10 @@ p { max-width: var(--measure); }
 .unravel.done { opacity: 0; }
 #tangle:is(:hover, :focus-visible) ~ .unravel .boil-target { animation: boil .375s steps(1) infinite; }
 .note { position: absolute; font-style: italic; color: var(--pencil); font-size: 1.05rem; white-space: nowrap; }
-.note-bug { left: 12%; bottom: 60%; }
-.note-bug .arrow { position: absolute; left: 100%; top: .4em; width: 5rem; transform: rotate(18deg) translateX(.3rem); }
+/* the note ends where the arrow starts; the arrow, placed in stage terms, lands on the tangle's shoulder */
+.note-bug { right: 75.5%; bottom: 72%; max-width: 11em; white-space: normal; text-wrap: balance; text-align: right; line-height: 1.3; transition: opacity .3s; }
+.note-arrow { position: absolute; left: 25%; bottom: 59%; width: clamp(2.6rem, 5.5%, 5rem); color: var(--pencil); transform: scaleY(-1) rotate(-12deg); transition: opacity .3s; pointer-events: none; }
+.tangle.pulled ~ :is(.note-bug, .note-arrow) { opacity: 0; }
 
 /* ---------- the thread: drawn as it scrolls into view ---------- */
 .thread { position: relative; width: 100%; }
@@ -162,7 +169,7 @@ p { max-width: var(--measure); }
 .snag:is(:hover, :focus-within) .snag-note { opacity: 1; }
 
 /* ---------- magic: one line pulled out of the screen lifts off as a kite ---------- */
-.magic { margin-top: 22vh; }
+.magic { margin-top: var(--section-gap); }
 .stage-magic { aspect-ratio: 2520 / 1120; max-width: 58rem; margin-top: 0; }
 .stage-magic .ink { position: absolute; inset: 0; visibility: hidden; }
 .stage-magic .ink.on { visibility: visible; }
@@ -171,7 +178,7 @@ p { max-width: var(--measure); }
 .stage-magic.lifted .note-kite { opacity: 1; }
 
 /* ---------- work: objects resting on the thread ---------- */
-.work { margin-top: 22vh; }
+.work { margin-top: var(--section-gap); }
 .shelf { position: relative; display: flex; align-items: flex-end; gap: clamp(2rem, 9vw, 8rem); padding: 0 6%; margin-top: 3rem; }
 .shelf + .thread { margin-top: -.9rem; }
 .thing { position: relative; display: grid; justify-items: center; gap: .9rem; text-align: center; }
@@ -184,13 +191,40 @@ p { max-width: var(--measure); }
 .thing a::after { content: ""; position: absolute; inset: -20%; }
 
 /* ---------- contact ---------- */
-.contact { margin-top: 30vh; padding-bottom: 18vh; }
+.contact { margin-top: var(--section-gap); padding-bottom: calc(var(--section-gap) * .6); }
 .stage-contact { aspect-ratio: 2502 / 729; }
-.postcard { position: absolute; left: 8%; bottom: 5.9%; width: 24%; }
 .write { position: absolute; left: 34%; bottom: 40%; font-style: italic; color: var(--pencil); }
 .write .arrow { width: 4.5rem; display: inline-block; transform: scale(-1, -1) rotate(-20deg); vertical-align: middle; margin-right: .5rem; }
-.walker { transition: transform 2.4s cubic-bezier(.45,.05,.55,.95), opacity .4s 2s; }
-.walker.gone { transform: translateX(60%); opacity: 0; }
+
+/* sent: the parcel lifts off on its own string, the way the kite did, and the figure turns to wave it off.
+   The waving figure is scaled and set on the walker's ground line (both measured from the art);
+   each drawing shows only its own band, so the line stays one line. */
+.parcel { position: absolute; left: 8%; bottom: 5.9%; width: 24%; aspect-ratio: 1524 / 653; }
+.parcel .ink { position: absolute; left: 0; top: 0; width: 100%; }
+.parcel .aloft { opacity: 0; }
+.stage-contact .waver { left: 30.3%; top: 12.3%; width: 70.6%; clip-path: inset(0 41.1% 0 42.4%); opacity: 0; transition: opacity .3s .2s; }
+.sent .walker { clip-path: polygon(0 0, 59.4% 0, 59.4% 100%, 72.3% 100%, 72.3% 0, 100% 0, 100% 100%, 0 100%); transition: clip-path 0s .4s; }
+.write .arrow { transition: opacity .4s; }
+.sent .write .arrow { opacity: 0; }
+.sent .waver { opacity: 1; }
+.sent .parcel .rest { opacity: 0; }
+.sent .parcel .aloft { opacity: 1; }
+.sent .parcel { opacity: 0; }
+.note-sent { left: 9%; bottom: 22%; margin: 0; }
+.note-sent:empty { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .sent .parcel { animation: lift-off 3.2s cubic-bezier(.5,0,.7,.4) both; }
+  .sent .parcel .ink { transition: opacity .25s; }
+  .note-sent { animation: write-in .8s ease-out both; }
+  @keyframes lift-off {
+    0% { opacity: 1; translate: 0 0; rotate: 0deg; scale: 1; }
+    12% { translate: 1% -12%; rotate: -3deg; }
+    35% { translate: 9% -80%; rotate: 4deg; scale: .9; }
+    60% { translate: 4% -170%; rotate: -5deg; scale: .75; opacity: 1; }
+    100% { translate: 22% -330%; rotate: 3deg; scale: .5; opacity: 0; }
+  }
+  @keyframes write-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 -5% 0 0); } }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -199,5 +233,4 @@ p { max-width: var(--measure); }
 }
 @media (max-width: 40rem) {
   .shelf { flex-wrap: wrap; row-gap: 6rem; }
-  .note-bug { bottom: 85%; left: 0; }
 }

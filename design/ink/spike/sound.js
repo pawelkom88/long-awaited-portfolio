@@ -108,11 +108,6 @@ const scrub = (dur, rows) => {
   f.connect(g).connect(out);
 };
 
-// winding it up: a few ratchet clicks before the tune starts
-const wind = () => {
-  for (let k = 0; k < 4; k++) setTimeout(tick, k * 90);
-};
-
 const start = async () => {
   if (!ctx) setup();
   await ctx.resume();
@@ -143,7 +138,7 @@ btn.addEventListener("click", () => {
   void btn.offsetWidth;
   btn.classList.add("jiggle");
   if (!on) return stop();
-  start().then(wind);
+  start();
 });
 
 // remembered "on": show it, and start on the first gesture anywhere

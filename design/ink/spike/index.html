@@ -20,14 +20,22 @@ try {
 <link rel="stylesheet" href="story.css">
 <link rel="stylesheet" href="rub.css">
 </head>
-<body>
+<body id="top">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <filter id="boil-a"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="1"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
   <filter id="boil-b"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
   <filter id="boil-c"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="13"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
 </svg>
 <header>
-  <span>Pawel Komorkiewicz</span>
+  <a class="mark" href="#top" aria-label="Pawel Komorkiewicz, back to the top">
+    <svg class="boil" viewBox="0 0 64 40" aria-hidden="true">
+      <!-- P, K, and the loose end of a string tied between them -->
+      <path d="M8.5 34.5 C8 25 9.2 14 8.8 5.6 M9.2 6.4 C15 3.6 22.5 4.2 23.6 9.8 C24.6 15.6 17.4 18.8 9.6 18.6"/>
+      <path d="M34.2 5.2 C34.8 15 33.6 25 34.4 34.8 M49.6 6.2 C44.6 11.4 39.6 16.2 34.6 20.2 C39.8 24.6 45.2 29.6 50.8 35"/>
+      <path class="tail" d="M23.2 14.6 C26.6 17.8 30 17.4 34.4 19.4 M50.6 35.2 c3.6 1.4 6.2 -.4 8.8 -2.8"/>
+    </svg>
+    <span class="mark-name">Pawel Komorkiewicz</span>
+  </a>
   <button type="button" class="sound" id="sound" aria-label="Music" aria-pressed="false">tune<span class="ink pencil strike" style="--src:url(../pencil/strike.webp); --ar:320/42"></span></button>
   <button type="button" class="switch" id="theme" aria-label="Night" aria-pressed="false">
     <span class="rays pencil boil"><span class="ink" style="--src:url(../svg/bulb-rays.svg); --ar:654/661"></span></span>
@@ -49,7 +57,17 @@ try {
     <p class="soft lede">I'm Pawel, a front end developer in Newport, Wales. I hold the line between what gets built and who it's for.</p>
     <div class="stage stage-hero">
       <div class="boil">
-        <span class="ink pose" id="seated" style="--src:url(../svg/figure-seated.svg); --ar:2469/705; top:0"></span>
+        <!-- the seated figure in registered layers (tools/split-seated.py), so it can look around and swing its legs -->
+        <div class="pose seated" id="seated" style="--ar:2469/705; top:0">
+          <span class="ink" style="--src:url(../svg/seated-body.svg)"></span>
+          <span class="ink shin shin-l" style="--src:url(../svg/seated-shin-l.svg)"></span>
+          <span class="ink shin shin-r" style="--src:url(../svg/seated-shin-r.svg)"></span>
+          <span class="head">
+            <span class="ink" style="--src:url(../svg/seated-head.svg)"></span>
+            <span class="ink eye" style="--src:url(../svg/seated-eye.svg)"></span>
+            <span class="ink eye eye-2" style="--src:url(../svg/seated-eye.svg)"></span>
+          </span>
+        </div>
         <span class="ink pose" id="dozing" hidden style="--src:url(../svg/figure-dozing.svg); --ar:2427/719; top:-3.2%"></span>
         <span class="ink pose" id="waving" hidden style="--src:url(../svg/figure-waving.svg); --ar:2452/856; top:-48.4%"></span>
         <span class="ink pose" id="pulling" hidden style="--src:url(../svg/figure-pulling.svg); --ar:2358/735; top:-35.4%"></span>
@@ -62,7 +80,8 @@ try {
         <span class="ink" style="--src:url(../svg/tangle-s4.svg); --ar:2048/880; top:31.2%"></span>
         <span class="ink" style="--src:url(../svg/tangle-s5.svg); --ar:2048/880; top:41.2%"></span>
       </div></div>
-      <p class="note note-bug" id="bug-note">most conversations start a bit knotted<span class="ink arrow" style="--src:url(../pencil/arrow.webp); --ar:199/112"></span></p>
+      <p class="note note-bug">most conversations start a bit knotted</p>
+      <span class="ink note-arrow" aria-hidden="true" style="--src:url(../pencil/arrow.webp); --ar:199/112"></span>
     </div>
   </section>
 
@@ -93,7 +112,7 @@ try {
         <p>Most bugs begin as misunderstandings. I ask the people, and the designers, before I ask the compiler.</p>
       </li>
       <li class="value boil-on-hover">
-        <span class="obj boil-target" style="--w:2.2rem"><span class="ink" style="--src:url(../svg/broom.svg); --ar:324/592"></span></span>
+        <span class="obj boil-target" style="--w:2.6rem"><span class="ink" style="--src:url(../svg/broom.svg); --ar:433/794"></span></span>
         <h3>Nothing in the way</h3>
         <p>Speed is not a phase at the end. Every kilobyte is a moment someone spends waiting.</p>
       </li>
@@ -115,9 +134,7 @@ try {
     <p class="soft">Where the string has been. Pencil is mine; the typing is the official version.</p>
 
     <article class="sheet">
-      <svg class="string" viewBox="0 0 24 1000" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M12 0 C9 120 15 240 12 360 S10 600 13 760 S11 920 12 1000"/>
-      </svg>
+      <span class="ink string" aria-hidden="true" style="--src:url(../svg/line-v.svg)"></span>
       <header class="sheet-head">
         <p class="typed">Curriculum vitae &mdash; draft 7</p>
         <p class="pencil hand">still editing</p>
@@ -289,7 +306,7 @@ try {
     <div class="shelf">
       <div class="thing boil-on-hover">
         <span class="ink pencil ring" style="--src:url(../pencil/circle.webp); --ar:292/280"></span>
-        <span class="obj boil-target" style="--w:clamp(2rem, 3.8vw, 2.8rem)"><span class="ink" style="--src:url(../svg/broom.svg); --ar:324/592"></span></span>
+        <span class="obj boil-target" style="--w:clamp(2.7rem, 5.1vw, 3.75rem)"><span class="ink" style="--src:url(../svg/broom.svg); --ar:433/794"></span></span>
         <a class="label" href="#">tidyshot<small>clears the screenshot pile</small></a>
       </div>
       <div class="thing boil-on-hover">
@@ -324,9 +341,14 @@ try {
     <p class="soft">A small question, a big idea, or just hello.</p>
     <div class="stage stage-contact">
       <div class="boil">
-        <span class="ink pose walker" id="walker" style="--src:url(../svg/figure-walking.svg); --ar:2502/729; top:0"></span>
+        <span class="ink pose walker" style="--src:url(../svg/figure-walking.svg); --ar:2502/729; top:0"></span>
+        <span class="ink pose waver" style="--src:url(../svg/figure-waving.svg); --ar:2452/856"></span>
       </div>
-      <span class="ink postcard" style="--src:url(../svg/postcard-rest.svg); --ar:1524/653"></span>
+      <div class="parcel boil">
+        <span class="ink rest" style="--src:url(../svg/postcard-rest.svg); --ar:1524/653"></span>
+        <span class="ink aloft" style="--src:url(../svg/postcard-bow.svg); --ar:1524/653"></span>
+      </div>
+      <p class="note note-sent" aria-live="polite"></p>
       <p class="write"><span class="ink arrow" style="--src:url(../pencil/arrow.webp); --ar:199/112"></span><a href="mailto:hello@example.com" id="send">hello@example.com</a></p>
     </div>
   </section>
@@ -350,7 +372,6 @@ const frames = [...unravel.querySelectorAll(".ink")];
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 tangle.addEventListener("click", () => {
   tangle.classList.add("pulled");
-  document.getElementById("bug-note").style.opacity = 0;
   let i = 0;
   const step = () => {
     frames[i].classList.remove("on");
@@ -376,9 +397,12 @@ if (!scrolled || still) {
   magic.addEventListener("click", lift);
   new IntersectionObserver(([e], io) => { if (e.isIntersecting) { setTimeout(lift, 600); io.disconnect(); } }, { threshold: .8 }).observe(magic);
 }
-// the figure carries the postcard off once you reach out
+// reach out and the parcel lifts off on its string, like the kite did; the figure waves it away
+const contact = document.querySelector(".stage-contact");
 document.getElementById("send").addEventListener("click", () => {
-  document.getElementById("walker").classList.add("gone");
+  if (contact.classList.contains("sent")) return;
+  contact.classList.add("sent");
+  setTimeout(() => { contact.querySelector(".note-sent").textContent = "on its way"; }, still ? 0 : 1400);
 });
 console.log("%cyou found the loose end. say hello: hello@example.com", "font: italic 14px Georgia, serif; color: #b0311f");
 </script>

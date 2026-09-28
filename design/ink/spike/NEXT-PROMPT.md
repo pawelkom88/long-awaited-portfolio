@@ -20,8 +20,21 @@ Portfolio for Pawel Komorkiewicz, a front end developer. It is a single hand-dra
 - `.next` height 215vh, caption lands at 80%, releases right after.
 - Verified Chromium 1280/390/reduced, Firefox (static + twinkle), WebKit; no horizontal overflow.
 
+## Done (2026-09-28, feedback round 2)
+- `--section-gap` (ink.css `:root`) is the single gap between chapters; all section margins use it.
+- `.boil` wrappers now fill their `.stage`: the filter made them the poses' containing block at zero height, so every registered `top: %` was 0 (hero waving/dozing/pulling floated).
+- Hero figure split into registered layers by `design/ink/tools/split-seated.py` (`svg/seated-*.svg`, same 2469x705 viewBox). CSS idle loop on the clock: looks at you (second eye fades in), back to the screwdriver, over at the knot, blinks, legs swing then rest. Off under reduced motion.
+- Knot note ends where a separate `.note-arrow` starts; the arrow is placed in stage % so it lands on the tangle at any width. On phones the hero and contact stages are wider than the screen (`width: 164%` / `140%`).
+- Kite: 170vh of scroll, frames cross-fade. On phones there's no pin; the stage's own view timeline drives the lift (`--lift-range`).
+- CV string is `svg/line-v.svg` (line-2 stood on end, `preserveAspectRatio="none"`), ends inside the sheet.
+- Night: 270vh, caption lands by 62%, then holds.
+- Altitude kite goes night-coloured over `.next` (`timeline-scope: --next` on body, fill-mode none).
+- Header: hand-drawn PK monogram, the name written in pencil on hover/focus.
+- Contact: on click the parcel swaps to its dangling-string drawing and floats up and away; the walker is replaced in place by the waving figure (clip bands keep one ground line); "on its way" is written in.
+- `tune` no longer plays the ratchet clicks. `broom.svg` viewBox was cropping the bristles.
+
 ## Still open, lower priority
-- Contact email is a placeholder (`hello@example.com`, in both the contact link and the console message). Ask the user.
+- Contact email placeholder: the user will change it manually.
 - The planet, figure-from-behind and stars are hand-coded inline SVG placeholders. Offer to generate proper ink art (`figure-back`, `planet`, `star` sparkles) with the gen + vectorize pipeline.
 - Mobile app shelf (`row-gap: 9rem`) looks fine in the 390px screenshot, but the 5th item sits alone on its row.
 - Firefox: the kite is stepped by the JS fallback (about 1.4s after it comes into view). Real Safari 26 on a device is still untested (only Playwright WebKit so far).

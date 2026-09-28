@@ -57,7 +57,7 @@ try {
     <p class="soft lede">I'm Pawel, a front end developer in Newport, Wales. I hold the line between what gets built and who it's for.</p>
     <div class="stage stage-hero">
       <div class="boil">
-        <!-- the seated figure in registered layers (tools/split-seated.py), so it can look around and swing its legs -->
+        <!-- the seated figure in registered layers (tools/split-seated.py), so it can glance at the knot and swing its legs -->
         <div class="pose seated" id="seated" style="--ar:2469/705; top:0">
           <span class="ink" style="--src:url(../svg/seated-body.svg)"></span>
           <span class="ink shin shin-l" style="--src:url(../svg/seated-shin-l.svg)"></span>
@@ -65,7 +65,6 @@ try {
           <span class="head">
             <span class="ink" style="--src:url(../svg/seated-head.svg)"></span>
             <span class="ink eye" style="--src:url(../svg/seated-eye.svg)"></span>
-            <span class="ink eye eye-2" style="--src:url(../svg/seated-eye.svg)"></span>
           </span>
         </div>
         <span class="ink pose" id="dozing" hidden style="--src:url(../svg/figure-dozing.svg); --ar:2427/719; top:-3.2%"></span>
@@ -104,7 +103,7 @@ try {
 
   <section class="care" aria-labelledby="care-h">
     <h2 id="care-h">What I hold on to</h2>
-    <p class="soft">Four knots that haven't slipped yet.</p>
+    <p class="soft">Six knots that haven't slipped yet.</p>
     <ul class="values">
       <li class="value boil-on-hover">
         <span class="obj boil-target" style="--w:3.4rem"><span class="ink" style="--src:url(../svg/lens.svg); --ar:478/524"></span></span>
@@ -125,6 +124,16 @@ try {
         <span class="obj boil-target" style="--w:2rem"><span class="ink" style="--src:url(../svg/paperclip.svg); --ar:284/419"></span></span>
         <h3>Hold it together</h3>
         <p>Shared components, clear patterns, one design language, so a whole team can speak without shouting.</p>
+      </li>
+      <li class="value boil-on-hover">
+        <span class="obj boil-target" style="--w:3.6rem"><span class="ink" style="--src:url(../svg/rubber.svg); --ar:535/455"></span></span>
+        <h3>Rub it out</h3>
+        <p>Sometimes the best change is a deletion. I'd rather throw away a draft than keep code nobody can read.</p>
+      </li>
+      <li class="value boil-on-hover">
+        <span class="obj boil-target" style="--w:2.9rem"><span class="ink" style="--src:url(../svg/note.svg); --ar:393/465"></span></span>
+        <h3>Leave a note</h3>
+        <p>Write down why, not just what, so the next person to open the file isn't left guessing.</p>
       </li>
     </ul>
   </section>
@@ -301,7 +310,7 @@ try {
   </section>
 
   <section class="work" aria-labelledby="work-h">
-    <h2 id="work-h"><span class="pencil hand">P.S.</span> Things I make when nobody's asking</h2>
+    <h2 id="work-h"><span class="pencil hand">P.S.</span> Things I make that nobody asked for</h2>
     <p class="soft">Small macOS and iOS tools, each one started as a little annoyance.</p>
     <div class="shelf">
       <div class="thing boil-on-hover">
@@ -341,15 +350,19 @@ try {
     <p class="soft">A small question, a big idea, or just hello.</p>
     <div class="stage stage-contact">
       <div class="boil">
+        <!-- the walker twice: everything but the figure's band stays, the band dissolves into the waving figure -->
         <span class="ink pose walker" style="--src:url(../svg/figure-walking.svg); --ar:2502/729; top:0"></span>
+        <span class="ink pose walker walker-band" style="--src:url(../svg/figure-walking.svg); --ar:2502/729; top:0"></span>
         <span class="ink pose waver" style="--src:url(../svg/figure-waving.svg); --ar:2452/856"></span>
       </div>
-      <div class="parcel boil">
+      <!-- the parcel rests on the line with a balloon tied to its bow, so it has a reason to rise -->
+      <div class="parcel"><div class="boil">
+        <span class="ink balloon" style="--src:url(../svg/balloon.svg); --ar:390/936"></span>
         <span class="ink rest" style="--src:url(../svg/postcard-rest.svg); --ar:1524/653"></span>
-        <span class="ink aloft" style="--src:url(../svg/postcard-bow.svg); --ar:1524/653"></span>
-      </div>
+        <span class="ink aloft" style="--src:url(../svg/postcard-bow.svg); --ar:1524/1007"></span>
+      </div></div>
       <p class="note note-sent" aria-live="polite"></p>
-      <p class="write"><span class="ink arrow" style="--src:url(../pencil/arrow.webp); --ar:199/112"></span><a href="mailto:hello@example.com" id="send">hello@example.com</a></p>
+      <p class="write"><a href="mailto:hello@example.com" id="send">hello@example.com</a><span class="ink arrow" style="--src:url(../pencil/arrow.webp); --ar:199/112"></span></p>
     </div>
   </section>
 </main>
@@ -397,7 +410,7 @@ if (!scrolled || still) {
   magic.addEventListener("click", lift);
   new IntersectionObserver(([e], io) => { if (e.isIntersecting) { setTimeout(lift, 600); io.disconnect(); } }, { threshold: .8 }).observe(magic);
 }
-// reach out and the parcel lifts off on its string, like the kite did; the figure waves it away
+// reach out and the balloon lifts the parcel off the line; the figure waves it away
 const contact = document.querySelector(".stage-contact");
 document.getElementById("send").addEventListener("click", () => {
   if (contact.classList.contains("sent")) return;

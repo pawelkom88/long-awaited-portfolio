@@ -1,0 +1,26 @@
+{
+  "run_id": "63a62b96-3a91-4b3c-a122-9e272b1783d8-23",
+  "verdicts": [
+    {
+      "action": "patch",
+      "name": "scroll-driven-animations",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "patch",
+      "name": "screenshot-scroll-position-testing",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "svg-rendering-in-web",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    }
+  ]
+}

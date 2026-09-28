@@ -10,7 +10,7 @@
   --measure: 34rem;
   --gutter: clamp(1rem, 5vw, 4rem);
   /* the one gap between chapters of the page */
-  --section-gap: clamp(6rem, 4rem + 8vw, 11rem);
+  --section-gap: clamp(8.5rem, 4rem + 8vw, 11rem);
   --paper: color-mix(in oklab, var(--day), var(--dusk) calc(var(--t) * 100%));
   color-scheme: light dark;
 }
@@ -193,35 +193,55 @@ p { max-width: var(--measure); }
 /* ---------- contact ---------- */
 .contact { margin-top: var(--section-gap); padding-bottom: calc(var(--section-gap) * .6); }
 .stage-contact { aspect-ratio: 2502 / 729; }
-.write { position: absolute; left: 34%; bottom: 40%; font-style: italic; color: var(--pencil); }
-.write .arrow { width: 4.5rem; display: inline-block; transform: scale(-1, -1) rotate(-20deg); vertical-align: middle; margin-right: .5rem; }
+/* the address, with the arrow running down to the parcel */
+.write { position: absolute; left: 15%; bottom: 62%; margin: 0; font-style: italic; color: var(--pencil); }
+.write .arrow { position: absolute; left: 70%; top: 85%; width: 3.4rem; transform: rotate(48deg); transform-origin: 0 0; pointer-events: none; transition: opacity .4s; }
 
-/* sent: the parcel lifts off on its own string, the way the kite did, and the figure turns to wave it off.
+/* the parcel rests on the line, a little behind the walker, with a balloon tied to its bow.
+   Sent, the balloon fills, the string goes taut, and it carries the parcel off; the figure turns to wave.
    The waving figure is scaled and set on the walker's ground line (both measured from the art);
    each drawing shows only its own band, so the line stays one line. */
-.parcel { position: absolute; left: 8%; bottom: 5.9%; width: 24%; aspect-ratio: 1524 / 653; }
+.parcel { position: absolute; left: 24%; bottom: 5.9%; width: 24%; aspect-ratio: 1524 / 653; transform-origin: 70.9% 51.3%; }
+.parcel > .boil { position: absolute; inset: 0; }
 .parcel .ink { position: absolute; left: 0; top: 0; width: 100%; }
 .parcel .aloft { opacity: 0; }
-.stage-contact .waver { left: 30.3%; top: 12.3%; width: 70.6%; clip-path: inset(0 41.1% 0 42.4%); opacity: 0; transition: opacity .3s .2s; }
-.sent .walker { clip-path: polygon(0 0, 59.4% 0, 59.4% 100%, 72.3% 100%, 72.3% 0, 100% 0, 100% 100%, 0 100%); transition: clip-path 0s .4s; }
-.write .arrow { transition: opacity .4s; }
+/* the string's loose end (57.7% 96% of the balloon) is tied at the bow knot (70.9% 51.3% of the parcel) */
+.parcel .balloon { left: 53%; top: -115.7%; width: 31%; transform-origin: 57.7% 96%; }
+/* the swap dissolves, like the kite's frames: the walking figure's band fades out as the waving one fades in */
+.stage-contact .walker:not(.walker-band) { clip-path: polygon(0 0, 59.4% 0, 59.4% 100%, 72.3% 100%, 72.3% 0, 100% 0, 100% 100%, 0 100%); }
+.stage-contact .walker-band { clip-path: inset(0 27.7% 0 59.4%); }
+.stage-contact .waver { left: 30.3%; top: 12.3%; width: 70.6%; clip-path: inset(0 41.1% 0 42.4%); opacity: 0; }
+.stage-contact :is(.waver, .walker-band) { transition: opacity .7s ease-in-out .8s; }
+.sent .walker-band { opacity: 0; }
 .sent .write .arrow { opacity: 0; }
 .sent .waver { opacity: 1; }
 .sent .parcel .rest { opacity: 0; }
 .sent .parcel .aloft { opacity: 1; }
 .sent .parcel { opacity: 0; }
-.note-sent { left: 9%; bottom: 22%; margin: 0; }
+.note-sent { left: 27%; bottom: 14%; margin: 0; }
 .note-sent:empty { display: none; }
 @media (prefers-reduced-motion: no-preference) {
-  .sent .parcel { animation: lift-off 3.2s cubic-bezier(.5,0,.7,.4) both; }
-  .sent .parcel .ink { transition: opacity .25s; }
+  .sent .parcel { animation: lift-off 3.8s both; }
+  .sent .parcel .balloon { animation: fill-up 3.8s ease-in-out both; }
+  /* the dangling string shows once it is off the ground */
+  .sent .parcel :is(.rest, .aloft) { transition: opacity .3s 1.05s; }
   .note-sent { animation: write-in .8s ease-out both; }
+  /* waits while the balloon fills, tips up by the bow as the string goes taut, then rises and sways */
   @keyframes lift-off {
-    0% { opacity: 1; translate: 0 0; rotate: 0deg; scale: 1; }
-    12% { translate: 1% -12%; rotate: -3deg; }
-    35% { translate: 9% -80%; rotate: 4deg; scale: .9; }
-    60% { translate: 4% -170%; rotate: -5deg; scale: .75; opacity: 1; }
-    100% { translate: 22% -330%; rotate: 3deg; scale: .5; opacity: 0; }
+    0%, 24% { opacity: 1; translate: 0 0; rotate: 0deg; scale: 1; animation-timing-function: ease-out; }
+    32% { translate: 0 -6%; rotate: -5deg; animation-timing-function: ease-in-out; }
+    50% { translate: -4% -70%; rotate: 3deg; scale: .95; }
+    72% { translate: -10% -170%; rotate: -3deg; scale: .85; opacity: 1; }
+    100% { translate: -20% -340%; rotate: 2deg; scale: .7; opacity: 0; }
+  }
+  /* a breath in, a swell that stretches the string taut, then a sway against the parcel */
+  @keyframes fill-up {
+    0% { scale: 1; rotate: 0deg; }
+    9% { scale: .96 1.03; }
+    22% { scale: 1.14; rotate: 3deg; }
+    46% { scale: 1.14; rotate: -4deg; }
+    70% { scale: 1.14; rotate: 3deg; }
+    100% { scale: 1.14; rotate: -2deg; }
   }
   @keyframes write-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 -5% 0 0); } }
 }

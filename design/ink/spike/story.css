@@ -56,8 +56,8 @@ h3 { font-weight: 400; font-size: 1.15rem; margin: 0; }
 .magic .pin { position: relative; }
 /* the pin's box: its content, not the whole screen, so it never parks blank paper above or below */
 /* measured: the text plus a stage a third of the width tall, capped where the stage stops growing */
-.magic { --pin-h: min(100vh, 11.5rem + 34vw, 34rem); --steps: 170vh; }
-.note-nojs { left: 4%; bottom: -2.2rem; }
+.magic { --pin-h: min(100vh, 11.5rem + min(100vw - 2 * var(--gutter), 76rem - 2 * var(--gutter)) * 1.12 * 1120 / 2520); --steps: 170vh; }
+.note-nojs { left: 27%; bottom: -2.7rem; }
 
 /* ---------- what I hold on to ---------- */
 .care { margin-top: var(--section-gap); }
@@ -187,7 +187,7 @@ h3 { font-weight: 400; font-size: 1.15rem; margin: 0; }
        as cover offsets: it catches when the section top reaches the pin's top line (cover 50vh + pin/2)
        and lets go when the section bottom reaches the pin's bottom line, just as "there it goes" lands */
     .magic { --catch: 50vh + var(--pin-h) / 2; --lift-range: cover calc(var(--catch)) cover calc(var(--catch) + var(--steps)); height: calc(var(--pin-h) + var(--steps)); view-timeline: --lift; }
-    .magic .pin { position: sticky; top: calc(50vh - var(--pin-h) / 2); min-height: var(--pin-h); display: grid; align-content: center; }
+    .magic .pin { position: sticky; top: calc(50vh - var(--pin-h) / 2); min-height: var(--pin-h); display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; }
     /* phones: no pin, the stage itself is the timeline; the kite lifts as it rises up the screen */
     @media (max-width: 48rem) {
       .magic { height: auto; view-timeline: none; }
@@ -282,6 +282,8 @@ h3 { font-weight: 400; font-size: 1.15rem; margin: 0; }
   /* phones: the hero and contact stages are wider than the screen, so the figures are big enough to read;
      the empty ground runs off both edges */
   .stage-hero { width: 164%; margin-left: -24%; }
+  .stage-magic { width: 170%; margin-left: -46%; }
+  .note-nojs { left: 30%; bottom: -2.9rem; }
   .hero { --reach: calc(1.64 * 48.4% * 705 / 2469); }
   .note-bug { right: auto; left: 16%; bottom: 77%; text-align: left; font-size: .95rem; }
   .note-arrow { left: 22%; bottom: 60%; width: 2.6rem; }

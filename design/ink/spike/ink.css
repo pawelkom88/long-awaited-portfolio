@@ -170,7 +170,9 @@ p { max-width: var(--measure); }
 
 /* ---------- magic: one line pulled out of the screen lifts off as a kite ---------- */
 .magic { margin-top: var(--section-gap); }
-.stage-magic { aspect-ratio: 2520 / 1120; max-width: 58rem; margin-top: 0; }
+/* drawn at the hero figure's scale: the stage runs past the column so the crouched figure's head
+   matches the seated one's; the empty ground on the left is what spills out */
+.stage-magic { aspect-ratio: 2520 / 1120; width: 112%; margin: 0 0 0 -6%; }
 .stage-magic .ink { position: absolute; inset: 0; visibility: hidden; }
 .stage-magic .ink.on { visibility: visible; }
 .stage-magic:not(.lifted) { cursor: pointer; }

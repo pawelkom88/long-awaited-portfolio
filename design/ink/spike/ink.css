@@ -8,6 +8,9 @@
   --ink-soft: #5b534b;
   --pencil: #b0311f;
   --measure: 34rem;
+  /* a lighter sheet laid on the paper, and the typewriter that writes on it */
+  --sheet: color-mix(in oklab, var(--paper), white 38%);
+  --typed: "American Typewriter", "Courier Prime", "Courier New", ui-monospace, monospace;
   --gutter: clamp(1rem, 5vw, 4rem);
   /* the one gap between chapters of the page */
   --section-gap: clamp(8.5rem, 4rem + 8vw, 11rem);
@@ -23,6 +26,7 @@
     --ink: #e6e0d4;
     --ink-soft: #a39b8e;
     --pencil: #e0775f;
+    --sheet: color-mix(in oklab, var(--paper), white 5%);
   }
 }
 :root[data-theme="dark"] {
@@ -32,6 +36,7 @@
   --ink: #e6e0d4;
   --ink-soft: #a39b8e;
   --pencil: #e0775f;
+  --sheet: color-mix(in oklab, var(--paper), white 5%);
   color-scheme: dark;
 }
 :root[data-theme="light"] { color-scheme: light; }
@@ -65,6 +70,34 @@ a { color: inherit; text-decoration: none; background: linear-gradient(var(--pen
 a:hover, a:focus-visible { background-size: 100% 1.5px; }
 
 header { position: relative; display: flex; justify-content: space-between; padding: 1.5rem var(--gutter); font-size: 1rem; color: var(--ink-soft); }
+
+/* ---------- the mark: PK in pen, with the name in pencil on hover ---------- */
+.mark { position: relative; display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); background: none; }
+.mark svg { width: 3.1rem; height: auto; overflow: visible; animation-play-state: paused; }
+.mark path { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.mark .tail { stroke: var(--pencil); stroke-width: 1.6; }
+.mark-name { font-style: italic; color: var(--pencil); font-size: .95rem; opacity: 0; translate: -.3rem 0; transition: opacity .25s, translate .25s; white-space: nowrap; }
+.mark:is(:hover, :focus-visible) svg { animation-play-state: running; }
+.mark:is(:hover, :focus-visible) .mark-name { opacity: 1; translate: 0 0; }
+
+/* ---------- the way to the notes: a pencil word beside the tune ---------- */
+.to-notes { margin: 0 1.6rem 0 auto; font-style: italic; color: var(--pencil); white-space: nowrap; }
+.to-notes + .sound { margin-left: 0; }
+.to-notes[aria-current="page"] { background-size: 100% 1.5px; }
+
+/* ---------- turning to another page of the notebook ----------
+   same-origin navigations cross-fade while the PK mark stays put. The type keeps the turn apart
+   from the theme switch's rub, which is a same-document transition with no type */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; types: turn; }
+}
+:root:active-view-transition-type(turn) {
+  .mark { view-transition-name: mark; }
+  &::view-transition-old(root) { animation: turn-out .22s ease-in both; }
+  &::view-transition-new(root) { animation: turn-in .38s ease-out .08s both; -webkit-mask: none; mask: none; }
+}
+@keyframes turn-out { to { opacity: 0; } }
+@keyframes turn-in { from { opacity: 0; translate: 0 .75rem; } }
 
 /* ---------- the switch: a bulb on a wire, and a cord you pull ---------- */
 .switch {
@@ -102,6 +135,8 @@ header { position: relative; display: flex; justify-content: space-between; padd
 /* the rubber exists only inside the transition, so the live page never paints it parked at 0,0 */
 .ink.rubber { position: fixed; left: 0; top: 0; width: 6rem; display: none; pointer-events: none; }
 :root:active-view-transition .ink.rubber { display: block; view-transition-name: rubber; }
+/* a page turn is not a rub: the rubber stays in the drawer */
+:root:active-view-transition-type(turn) .ink.rubber { display: none; }
 
 section { position: relative; padding: 0 var(--gutter); max-width: 76rem; margin: 0 auto; }
 h1 { font-weight: 400; font-size: clamp(1.9rem, 3.6vw, 2.9rem); line-height: 1.15; max-width: 20ch; margin: 12vh 0 0; letter-spacing: -.01em; }
@@ -118,6 +153,8 @@ p { max-width: var(--measure); }
   aspect-ratio: var(--ar);
 }
 .pencil { color: var(--pencil); }
+.hand { font-style: italic; color: var(--pencil); }
+.typed { font-family: var(--typed); }
 
 /* boil: three displacement seeds swapped at ~8fps, on the wrapper so it acts after the mask */
 .boil { filter: url(#boil-a); animation: boil .375s steps(1) infinite; }

@@ -1,0 +1,1 @@
+@media (min-width: 48.01rem) {\n  .hero { display: flex; flex-direction: column; min-height: calc(100svh - 5rem); padding-block: 1.5rem 2vh; }\n  .hero > * { flex-shrink: 0; }\n  .hero h1 { margin-top: auto; }\n  .hero .stage { margin-bottom: auto; }\n}

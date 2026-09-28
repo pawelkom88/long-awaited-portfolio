@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One line, drawn by hand · Loose ends</title>
+<meta name="description" content="How this site is drawn: masks painted with the ink colour, a filter that boils, and scroll that only adds the way there.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="One line, drawn by hand">
+<meta property="og:description" content="How this site is drawn: masks painted with the ink colour, a filter that boils, and scroll that only adds the way there.">
+<meta property="og:site_name" content="Loose ends">
+<meta property="article:published_time" content="2026-09-28">
+<script>
+// before first paint: re-apply a theme the switch pinned, so there is no flash
+try {
+  const scheme = localStorage.getItem("color-scheme");
+  if (scheme) {
+    document.documentElement.dataset.theme = scheme;
+    document.querySelector('meta[name="color-scheme"]').content = scheme;
+  }
+} catch {}
+</script>
+<link rel="stylesheet" href="../ink.css">
+<link rel="stylesheet" href="../rub.css">
+<link rel="stylesheet" href="../blog.css">
+<!-- the page turn waits for the top of the page, so it never fades into blank paper -->
+<link rel="expect" href="#top-of-page" blocking="render">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="boil-a"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="1"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+  <filter id="boil-b"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+  <filter id="boil-c"><feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="13"/><feDisplacementMap in="SourceGraphic" scale="3"/></filter>
+</svg>
+<header>
+  <a class="mark" href="../" aria-label="Pawel Komorkiewicz, the story">
+    <svg class="boil" viewBox="0 0 64 40" aria-hidden="true">
+      <!-- P, K, and the loose end of a string tied between them -->
+      <path d="M8.5 34.5 C8 25 9.2 14 8.8 5.6 M9.2 6.4 C15 3.6 22.5 4.2 23.6 9.8 C24.6 15.6 17.4 18.8 9.6 18.6"/>
+      <path d="M34.2 5.2 C34.8 15 33.6 25 34.4 34.8 M49.6 6.2 C44.6 11.4 39.6 16.2 34.6 20.2 C39.8 24.6 45.2 29.6 50.8 35"/>
+      <path class="tail" d="M23.2 14.6 C26.6 17.8 30 17.4 34.4 19.4 M50.6 35.2 c3.6 1.4 6.2 -.4 8.8 -2.8"/>
+    </svg>
+    <span class="mark-name">Pawel Komorkiewicz</span>
+  </a>
+  <a class="to-notes" href="./">loose ends</a>
+  <button type="button" class="sound" id="sound" aria-label="Music" aria-pressed="false">tune<span class="ink pencil strike" style="--src:url(../../pencil/strike.webp); --ar:320/42"></span></button>
+  <button type="button" class="switch" id="theme" aria-label="Night" aria-pressed="false">
+    <span class="rays pencil boil"><span class="ink" style="--src:url(../../svg/bulb-rays.svg); --ar:654/661"></span></span>
+    <span class="bulb boil"><span class="ink" style="--src:url(../../svg/bulb.svg); --ar:302/1806"></span></span>
+    <span class="cord"><span class="ink" style="--src:url(../../svg/pull-cord.svg); --ar:158/2086"></span></span>
+    <span class="hint">pull</span>
+  </button>
+</header>
+<span class="ink rubber" aria-hidden="true" style="--src:url(../../svg/rubber.svg); --ar:535/455"></span>
+
+<main>
+  <article class="post">
+    <header class="post-head" id="top-of-page">
+      <p class="kicker"><a href="./">Loose ends</a></p>
+      <h1>One line, drawn by hand</h1>
+      <p class="typed meta"><time datetime="2026-09-28">28 September 2026</time> &middot; a 6 minute read</p>
+    </header>
+
+  <p>This site is drawn with one pen. Every figure, knot and kite on it began as a quick fineliner sketch on white paper, and every one of them is painted on the page in whatever colour the ink happens to be at that moment: near black by day, warm off-white at night. None of the drawings knows what colour it is. That turned out to be the most useful decision in the whole build, so it is where this post starts.</p>
+
+  <p>I wanted a portfolio that felt like someone's notebook, not a template with a hand-drawn font. That meant the drawings had to behave like ink: take the colour of the page's pen, wobble a little, and sit on the paper instead of floating above it. It also meant the page had to stay fast, readable and accessible, because a notebook nobody can read is just a mood board.</p>
+
+  <h2>A drawing that doesn't know its colour</h2>
+
+  <p>Each sketch goes through the same small pipeline. A raster drawing is thresholded, traced with potrace into a single filled path, tidied with svgo, and saved with <code>fill="currentColor"</code>. That on its own would let an inline SVG follow the text colour, but I didn't want hundreds of inline paths in the HTML. So the SVG is never shown. It is used as a mask, and the element behind it is painted with <code>currentColor</code>:</p>
+
+<pre><code><mark>.ink {</mark>
+<mark>  display: block;</mark>
+<mark>  background: currentColor;</mark>
+  -webkit-mask: var(--src) center / contain no-repeat;
+  mask: var(--src) center / contain no-repeat;
+  aspect-ratio: var(--ar);
+}</code></pre>
+
+  <p>The markup for any drawing is then one empty element with two custom properties: which file, and its aspect ratio. The file is cached, the element is cheap, and the colour comes from the cascade like any other text. When the theme flips, every drawing on the page flips with it, for free. The pencil marks (the red underlines, circles and ticks) are the same trick with a different colour set on a parent.</p>
+
+  <p>The one catch is that a mask only knows shape. You can't have two colours inside one drawing, so anything that needs a second colour is a second drawing laid on top. For this site that is a feature. It keeps me to one pen and one pencil, which is most of what makes it look like a notebook.</p>
+
+  <h2>Letting the line boil</h2>
+
+  <p>A drawing that sits perfectly still reads as a vector icon. Hand-drawn animation has a trick for this called boiling: you trace the same frame three times, and play the traces in a loop, so the line shivers slightly even when nothing is moving. Drawing everything three times was not going to happen, so the page does it with an SVG filter instead.</p>
+
+<pre><code>&lt;filter id="boil-a"&gt;
+  &lt;feTurbulence type="fractalNoise" baseFrequency=".03" numOctaves="2" seed="1"/&gt;
+  &lt;feDisplacementMap in="SourceGraphic" scale="3"/&gt;
+&lt;/filter&gt;
+
+<mark>.boil { filter: url(#boil-a); animation: boil .375s steps(1) infinite; }</mark>
+@keyframes boil {
+  0% { filter: url(#boil-a); }
+  33% { filter: url(#boil-b); }
+  66% { filter: url(#boil-c); }
+}</code></pre>
+
+  <p>Three filters with three different noise seeds, swapped at about eight frames a second with a stepped animation. The displacement is only three pixels, which is enough to make the line feel alive and not enough to make it hard to look at. Two details matter more than the numbers.</p>
+
+  <p>First, the filter goes on a wrapper, never on the masked element itself. Filters run before masks, so on the same element the noise would push the paint around and the mask would cut it back to the clean shape. On the wrapper, it bends the finished drawing.</p>
+
+  <p>Second, a filter makes its element a containing block for anything absolutely positioned inside it. I lost an evening to that one: every figure that was placed with a percentage <code>top</code> suddenly collapsed to zero, because the wrapper had no height. The fix is to give the wrapper the whole stage, with <code>position: absolute; inset: 0</code>, so the percentages have something to be a percentage of.</p>
+
+  <h2>Scroll adds the way there, not the destination</h2>
+
+  <p>A lot of the story page moves as you scroll. A kite lifts out of a laptop, a string drops down the CV, the camera pulls back from a very small planet. All of that is CSS scroll-driven animation, with no script and no polyfill. The rule that kept it sane was simple: the resting state is the finished drawing, and the scroll only adds the way there.</p>
+
+<pre><code>@media (prefers-reduced-motion: no-preference) {
+<mark>  @supports ((animation-timeline: view()) and (animation-range: entry)) {</mark>
+    .thread &gt; .ink {
+      animation: draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 45%;
+    }
+  }
+}</code></pre>
+
+  <p>If a browser doesn't support view timelines, or someone has asked their system for less motion, none of that CSS applies and they get the page already drawn. Nothing is hidden waiting for an animation that never runs. It also means the page reads the same with CSS half loaded, which is a nice property to have for free.</p>
+
+  <p>One small ordering trap: <code>animation-timeline</code> has to come after the <code>animation</code> shorthand. The shorthand resets the timeline to the document clock, so if you write them the other way around, your scroll animation quietly becomes a one-second animation that runs on page load.</p>
+
+  <figure>
+    <img src="img/hero.webp" width="1280" height="680" alt="The top of the story page: a heading reading 'A conversation between code and people' above an ink figure sitting on a ground line, working on a tangle of string with a screwdriver.">
+    <figcaption>The hero at rest. Everything on it is one colour, the page's ink, except the pencil note.</figcaption>
+  </figure>
+
+  <h2>Clip, not hidden</h2>
+
+  <p>The bug that cost me the most time was one word. Wide drawings run off the edge of the screen on phones on purpose, so the page needs to stop horizontal scrolling. The usual line for that is <code>overflow-x: hidden</code> on the body. Do that here, and every sticky element and every view timeline on the page stops working.</p>
+
+  <p>The reason is that <code>hidden</code> doesn't only hide. It makes the element a scroll container. Once the body is a scroll container, sticky elements stick to it instead of the viewport, and view timelines track their position inside it, where nothing ever moves. <code>overflow-x: clip</code> cuts off the overflow without creating a scroll container, so everything else keeps working. I now reach for <code>clip</code> by default, and use <code>hidden</code> only when I actually want something to scroll.</p>
+
+  <h2>Accessible, even though it's drawn</h2>
+
+  <p>Hand-drawn pages have a habit of hiding meaning in pictures. The rule I set was that a drawing can decorate meaning but never carry it alone. The pencil strike through an old CV line sits on top of real text in a softer colour, so a screen reader gets the words and anyone can still read them. The figure scenes that tell part of the story have a role of <code>img</code> and a sentence describing what happens. A drawing that is only decoration is an empty element, so there is nothing to announce.</p>
+
+  <p>Night mode was the other test. Because every drawing takes its colour from the ink, dark mode only has to change a handful of tokens: paper, ink, a softer ink and the pencil. I checked each pair against WCAG AA in both themes, rather than trusting my eye at two in the morning.</p>
+
+  <h2>What I'd tell myself at the start</h2>
+
+  <p>Decide on one pen before drawing anything. Most of the look came from limits: one line weight, one ink colour, one accent, and one small figure who holds the string. Every time I added a second style of anything, the page stopped looking like a notebook and started looking like a collage.</p>
+
+  <p>And measure the art instead of eyeballing it. Every pose on the stage is placed from numbers read off the drawing itself, by rendering it to a canvas and scanning for the lowest inked pixel, so each figure's feet land on the same ground line. It's dull work. It's also why the page feels like one drawing instead of a pile of stickers.</p>
+
+  <p class="back"><a href="./">Back to the line</a></p>
+  </article>
+</main>
+<script type="module" src="../theme.js"></script>
+<script type="module" src="../sound.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "run_id": "b5921bb2-1b6d-4913-9ee1-08730fa44cea-6",
+  "verdicts": [
+    {
+      "action": "create",
+      "name": "stable-viewport-height",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "media-query-scope-desktop",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "grid-column-containment",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "animation-scale-verification",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    }
+  ]
+}

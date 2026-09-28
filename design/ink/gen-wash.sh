@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ink-wash edge masks for the paper -> night transition (spike/wash-top.webp, spike/wash-bottom.webp).
+# Ink-wash edge masks for the paper -> night transition (../../src/assets/paper/wash-top.webp, ../../src/assets/paper/wash-bottom.webp).
 # Alpha only: the colour comes from CSS (--abyss), so one pair of files serves day and night themes.
 # Tileable horizontally (seamless cross-fade), opaque along the bottom row so it seams onto a solid fill.
 # usage: ./gen-wash.sh    (needs magick + cwebp)
@@ -44,7 +44,7 @@ wash() { # $1 seed, $2 out
   cwebp -quiet -q 70 -alpha_q 85 "$tmp/out.png" -o "$2"
   echo "$2 $(wc -c <"$2") bytes"
 }
-wash 11 spike/wash-top.webp
+wash 11 ../../src/assets/paper/wash-top.webp
 wash 29 "$tmp/b.webp"
-magick "$tmp/b.webp" -flip "$tmp/b.png" && cwebp -quiet -q 70 -alpha_q 85 "$tmp/b.png" -o spike/wash-bottom.webp
-echo "spike/wash-bottom.webp $(wc -c <spike/wash-bottom.webp) bytes"
+magick "$tmp/b.webp" -flip "$tmp/b.png" && cwebp -quiet -q 70 -alpha_q 85 "$tmp/b.png" -o ../../src/assets/paper/wash-bottom.webp
+echo "../../src/assets/paper/wash-bottom.webp $(wc -c <../../src/assets/paper/wash-bottom.webp) bytes"

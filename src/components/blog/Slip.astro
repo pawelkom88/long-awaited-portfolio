@@ -1,0 +1,104 @@
+---
+// One post, a paper slip pegged to the washing line. Touched, it swings on its peg and its title is underlined in pencil.
+import Ink from "../ink/Ink.astro";
+interface Props { href: string; title: string; date: Date; dateText: string; description: string }
+const { href, title, date, dateText, description } = Astro.props;
+---
+<li class="slip">
+  <span class="peg"><Ink name="peg" /></span>
+  <article class="paper">
+    <h2><a href={href}><span class="t">{title}</span></a></h2>
+    <p class="typed when"><time datetime={date.toISOString().slice(0, 10)}>{dateText}</time></p>
+    <p class="gist">{description}</p>
+  </article>
+</li>
+
+<style>
+  /* each slip's stretch of the line is cut from one line as wide as the row (sag.svg), so the pieces meet.
+     --y is the line's height at the slip's centre, measured from the art:
+     52% of the sag a sixth of the way in, 68% at a quarter, 90% at the middle */
+  .slip { --c: 0; --rest: 0; --y: .52; --tilt: -1deg; position: relative; display: grid; justify-items: center; }
+  .slip::before {
+    content: ""; position: absolute; top: 0; left: calc(var(--gap) / -2);
+    width: calc(100% + var(--gap) + var(--rest) * var(--step)); height: var(--line-h);
+    background: currentColor;
+    -webkit-mask: url("../../assets/ink/sag.svg") calc(-1 * var(--c) * var(--step)) 0 / calc(100cqi + var(--gap)) 100% no-repeat;
+    mask: url("../../assets/ink/sag.svg") calc(-1 * var(--c) * var(--step)) 0 / calc(100cqi + var(--gap)) 100% no-repeat;
+    pointer-events: none;
+  }
+  .slip:nth-child(3n + 2) { --c: 1; --y: .9; }
+  .slip:nth-child(3n) { --c: 2; }
+  /* a short last row still hangs the whole line */
+  .slip:nth-child(3n + 1):last-child { --rest: 2; }
+  .slip:nth-child(3n + 2):last-child { --rest: 1; }
+  .slip:nth-child(5n + 2) { --tilt: .8deg; }
+  .slip:nth-child(5n + 3) { --tilt: -.4deg; }
+  .slip:nth-child(5n + 4) { --tilt: 1.2deg; }
+  .slip:nth-child(5n) { --tilt: -.7deg; }
+
+  /* the peg bites the line at its notch, 62% of the way down the drawing; its jaws close on the slip's top edge */
+  .peg {
+    position: absolute; z-index: 1; left: 50%; top: calc(var(--y) * var(--line-h) - .62 * var(--peg-h));
+    height: var(--peg-h); aspect-ratio: 252 / 727; translate: -50% 0; pointer-events: none;
+  }
+  .peg > :global(.ink) { height: 100%; }
+  .slip:is(:hover, :focus-within) .peg { animation: boil .375s steps(1) infinite; }
+
+  .paper {
+    position: relative;
+    width: min(100%, 19rem);
+    margin-top: calc(var(--y) * var(--line-h) + .2 * var(--peg-h));
+    padding: 1.5rem 1.4rem 1.6rem;
+    background: var(--sheet) url("../../assets/paper/grain.webp") 0 0 / 800px;
+    background-blend-mode: multiply;
+    box-shadow: 0 1px 0 var(--paper-edge), 0 18px 30px -22px var(--shade);
+    rotate: var(--tilt);
+    transform-origin: 50% -.2rem; /* it hangs from the peg */
+  }
+  h2 { font-size: 1.35rem; line-height: 1.25; margin: 0; text-wrap: balance; }
+  h2 a { background: none; }
+  /* the whole slip is the link; the title stays the accessible name */
+  h2 a::after { content: ""; position: absolute; inset: 0; }
+  h2 a:focus-visible { outline: none; }
+  .slip:has(a:focus-visible) .paper { outline: 2px solid var(--pencil); outline-offset: 6px; }
+  /* the pencil underline under the title, drawn left to right */
+  .t { position: relative; display: inline-block; }
+  .t::before {
+    content: ""; position: absolute; left: -3%; right: -3%; bottom: -.35em; height: .45em;
+    background: var(--pencil);
+    -webkit-mask: url("../../assets/pencil/underline.webp") 0 0 / 100% 100%;
+    mask: url("../../assets/pencil/underline.webp") 0 0 / 100% 100%;
+    clip-path: inset(0 100% 0 0); transition: clip-path .45s cubic-bezier(.3,.7,.4,1);
+  }
+  .slip:is(:hover, :focus-within) .t::before { clip-path: inset(0); }
+  .when { margin: .9rem 0 0; font-size: .82rem; letter-spacing: .03em; color: var(--ink-soft); }
+  .gist { margin: .5rem 0 0; font-size: 1rem; line-height: 1.5; color: var(--ink-soft); }
+
+  /* touched, the slip swings on its peg and settles: a transition to a nudge of .7deg, with an easing
+     that overshoots it many times over, is the damped swing both ways, with no script */
+  @media (prefers-reduced-motion: no-preference) {
+    .paper { transition: rotate .6s ease-out; transition: rotate 1.5s linear(0, 5.5 13%, -3.4 30%, 3 47%, -.6 64%, 1.8 80%, 1); }
+    .slip:is(:hover, :focus-within) .paper { rotate: calc(var(--tilt) + .7deg); }
+  }
+
+  @media (max-width: 64rem) {
+    .slip:nth-child(n) { --c: 0; --y: .68; --rest: 0; }
+    .slip:nth-child(2n) { --c: 1; }
+    .slip:nth-child(2n + 1):last-child { --rest: 1; }
+  }
+  /* phones: tied on at a knot on the thread */
+  @media (max-width: 40rem) {
+    .slip::before, .peg { display: none; }
+    .slip { justify-items: start; }
+    .slip::after {
+      content: ""; position: absolute; left: -1rem; top: 1.6rem; width: 3.2rem; aspect-ratio: 580 / 200;
+      translate: -50% -50%; rotate: 90deg; background: currentColor;
+      -webkit-mask: url("../../assets/ink/knot-1.svg") center / contain no-repeat;
+      mask: url("../../assets/ink/knot-1.svg") center / contain no-repeat;
+    }
+    .paper { margin-top: 0; width: 100%; transform-origin: -1rem 1.6rem; /* it hangs from the knot */ }
+  }
+  /* a line with one slip: it hangs in the middle, where the line sags lowest */
+  .slip:only-child { grid-column: 1 / -1; --c: 0; --rest: 0; --y: .9; }
+  @media (max-width: 40rem) { .slip:only-child { --y: 0; } }
+</style>

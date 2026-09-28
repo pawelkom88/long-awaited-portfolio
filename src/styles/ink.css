@@ -1,0 +1,299 @@
+@property --t { syntax: "<number>"; inherits: true; initial-value: 0; }
+
+:root {
+  --day: #e8e4dc;
+  --dusk: #e4d9cb;
+  --paper-edge: #d6d1c7;
+  --ink: #2a2521;
+  --ink-soft: #5b534b;
+  --pencil: #b0311f;
+  --measure: 34rem;
+  /* a lighter sheet laid on the paper, and the typewriter that writes on it */
+  --sheet: color-mix(in oklab, var(--paper), white 38%);
+  --typed: "American Typewriter", "Courier Prime", "Courier New", ui-monospace, monospace;
+  --gutter: clamp(1rem, 5vw, 4rem);
+  /* the one gap between chapters of the page */
+  --section-gap: clamp(8.5rem, 4rem + 8vw, 11rem);
+  --paper: color-mix(in oklab, var(--day), var(--dusk) calc(var(--t) * 100%));
+  /* shadows fall darker than the paper in both themes (the ink turns light at night) */
+  --shade: color-mix(in oklab, var(--ink) 60%, transparent);
+  color-scheme: light dark;
+}
+/* night follows the system, unless the switch pinned a theme on <html> */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --day: #1e2430;
+    --dusk: #1b2029;
+    --paper-edge: #141821;
+    --ink: #e6e0d4;
+    --ink-soft: #a39b8e;
+    --pencil: #e0775f;
+    --sheet: color-mix(in oklab, var(--paper), white 5%);
+    --shade: #0008;
+  }
+}
+:root[data-theme="dark"] {
+  --day: #1e2430;
+  --dusk: #1b2029;
+  --paper-edge: #141821;
+  --ink: #e6e0d4;
+  --ink-soft: #a39b8e;
+  --pencil: #e0775f;
+  --sheet: color-mix(in oklab, var(--paper), white 5%);
+  --shade: #0008;
+  color-scheme: dark;
+}
+:root[data-theme="light"] { color-scheme: light; }
+
+/* paper tint drifts from morning toward evening as you read */
+@supports (animation-timeline: scroll()) {
+  :root { animation: day linear both; animation-timeline: scroll(root); }
+  @keyframes day { to { --t: 1; } }
+}
+
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body {
+  margin: 0;
+  color: var(--ink);
+  font: 1.125rem/1.6 "Iowan Old Style", "Palatino", Georgia, serif;
+  background-color: var(--paper);
+  background-image:
+    url("../assets/paper/specks.webp"),
+    radial-gradient(ellipse 120% 90% at 50% 30%, transparent 45%, var(--paper-edge)),
+    url("../assets/paper/grain.webp");
+  background-size: 1210px, 100% 100%, 800px;
+  background-attachment: fixed;
+  background-blend-mode: normal, normal, multiply;
+  overflow-x: clip; /* clip, not hidden: hidden would make body a scroller and break sticky + view timelines */
+}
+::selection { background: color-mix(in oklab, var(--pencil) 22%, transparent); }
+:focus-visible { outline: 2px solid var(--pencil); outline-offset: 4px; border-radius: 40% 55% 45% 60% / 55% 40% 60% 45%; }
+
+a { color: inherit; text-decoration: none; background: linear-gradient(var(--pencil), var(--pencil)) 0 100% / 0 1.5px no-repeat; transition: background-size .3s ease-out; }
+a:hover, a:focus-visible { background-size: 100% 1.5px; }
+
+header { position: relative; display: flex; justify-content: space-between; padding: 1.5rem var(--gutter); font-size: 1rem; color: var(--ink-soft); }
+
+/* ---------- the mark: PK in pen, with the name in pencil on hover ---------- */
+.mark { position: relative; display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); background: none; }
+.mark svg { width: 3.1rem; height: auto; overflow: visible; animation-play-state: paused; }
+.mark path { fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.mark .tail { stroke: var(--pencil); stroke-width: 1.6; }
+.mark-name { font-style: italic; color: var(--pencil); font-size: .95rem; opacity: 0; translate: -.3rem 0; transition: opacity .25s, translate .25s; white-space: nowrap; }
+.mark:is(:hover, :focus-visible) svg { animation-play-state: running; }
+.mark:is(:hover, :focus-visible) .mark-name { opacity: 1; translate: 0 0; }
+
+/* ---------- the way to the notes: a pencil word beside the tune ---------- */
+.to-notes { margin: 0 1.6rem 0 auto; font-style: italic; color: var(--pencil); white-space: nowrap; }
+.to-notes + .sound { margin-left: 0; }
+.to-notes[aria-current="page"] { background-size: 100% 1.5px; }
+
+/* ---------- turning to another page of the notebook ----------
+   same-origin navigations cross-fade while the PK mark stays put. The type keeps the turn apart
+   from the theme switch's rub, which is a same-document transition with no type */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; types: turn; }
+}
+:root:active-view-transition-type(turn) {
+  .mark { view-transition-name: mark; }
+  &::view-transition-old(root) { animation: turn-out .22s ease-in both; }
+  &::view-transition-new(root) { animation: turn-in .38s ease-out .08s both; -webkit-mask: none; mask: none; }
+}
+@keyframes turn-out { to { opacity: 0; } }
+@keyframes turn-in { from { opacity: 0; translate: 0 .75rem; } }
+
+/* ---------- the switch: a bulb on a wire, and a cord you pull ---------- */
+.switch {
+  --bulb: 2rem;
+  position: absolute; top: -3rem; right: var(--gutter); z-index: 1;
+  width: calc(var(--bulb) * 2.6); height: calc(var(--bulb) * 5.98 + 1rem);
+  color: var(--ink); background: none; border: 0; padding: 0; cursor: pointer;
+}
+.switch .bulb { position: absolute; left: 0; top: 0; width: var(--bulb); transform-origin: 50% 0; }
+.switch .rays {
+  position: absolute; width: calc(var(--bulb) * 1.85); left: calc(var(--bulb) * -.425);
+  top: calc(var(--bulb) * 5.41 - var(--bulb) * .925);
+  opacity: 0; scale: .7; transition: opacity .375s, scale .525s cubic-bezier(.3,1.6,.5,1);
+}
+.switch .cord { position: absolute; left: calc(var(--bulb) * 1.55); top: 0; width: calc(var(--bulb) * .36); }
+.switch .hint { position: absolute; left: calc(var(--bulb) * 2); bottom: 0; font-style: italic; font-size: .95rem; color: var(--pencil); opacity: 0; transition: opacity .3s; }
+.switch:is(:hover, :focus-visible) .hint { opacity: 1; }
+.switch:focus-visible { outline-offset: -.5rem; }
+.switch[aria-pressed="true"] .rays { opacity: 1; scale: 1; }
+.switch.tug .cord { animation: tug .9s cubic-bezier(.3,.7,.4,1); }
+.switch.tug .bulb { animation: sway 1.65s ease-out; }
+@keyframes tug { 25% { translate: 0 .9rem; } 55% { translate: 0 -.2rem; } 75% { translate: 0 .1rem; } }
+@keyframes sway { 20% { rotate: 3deg; } 50% { rotate: -2deg; } 75% { rotate: 1deg; } }
+
+/* ---------- the sound: a pencil note, struck through while it is off ---------- */
+.sound {
+  position: relative; margin: 0 5.5rem 0 auto; padding: 0;
+  font: inherit; font-style: italic; color: var(--pencil); background: none; border: 0; cursor: pointer;
+}
+.sound .strike { position: absolute; left: -15%; top: 30%; width: 130%; rotate: -4deg; clip-path: inset(0); transition: clip-path .6s cubic-bezier(.3,.7,.4,1); }
+.sound[aria-pressed="true"] .strike { clip-path: inset(0 0 0 100%); }
+.sound.jiggle { animation: jiggle .6s; }
+@keyframes jiggle { 25% { rotate: -6deg; } 60% { rotate: 4deg; } }
+
+/* the rubber exists only inside the transition, so the live page never paints it parked at 0,0 */
+.ink.rubber { position: fixed; left: 0; top: 0; width: 6rem; display: none; pointer-events: none; }
+:root:active-view-transition .ink.rubber { display: block; view-transition-name: rubber; }
+/* a page turn is not a rub: the rubber stays in the drawer */
+:root:active-view-transition-type(turn) .ink.rubber { display: none; }
+
+section { position: relative; padding: 0 var(--gutter); max-width: 76rem; margin: 0 auto; }
+h1 { font-weight: 400; font-size: clamp(1.9rem, 3.6vw, 2.9rem); line-height: 1.15; max-width: 20ch; margin: 12vh 0 0; letter-spacing: -.01em; }
+h2 { font-weight: 400; font-size: 1.6rem; margin: 0 0 .5rem; }
+p { max-width: var(--measure); }
+.soft { color: var(--ink-soft); }
+
+/* ---------- ink: any asset, painted with currentColor through its own shape ---------- */
+.ink {
+  display: block;
+  background: currentColor;
+  -webkit-mask: var(--src) center / contain no-repeat;
+  mask: var(--src) center / contain no-repeat;
+  aspect-ratio: var(--ar);
+}
+.pencil { color: var(--pencil); }
+.hand { font-style: italic; color: var(--pencil); }
+.typed { font-family: var(--typed); }
+
+/* boil: three displacement seeds swapped at ~8fps, on the wrapper so it acts after the mask */
+.boil { filter: url(#boil-a); animation: boil .375s steps(1) infinite; }
+@keyframes boil { 0% { filter: url(#boil-a); } 33% { filter: url(#boil-b); } 66% { filter: url(#boil-c); } }
+.boil-on-hover { filter: none; }
+.boil-on-hover:is(:hover, :focus-within) .boil-target { animation: boil .375s steps(1) infinite; }
+
+/* ---------- stage: one ground line, everything rests on it ---------- */
+.stage { position: relative; margin-top: 6vh; }
+/* the boil wrapper's filter makes it the poses' containing block, so it must span the stage
+   or every registered top: % offset resolves against zero height */
+.stage > .boil { position: absolute; inset: 0; }
+.pose { position: absolute; left: 0; width: 100%; transition: opacity .2s; }
+.pose[hidden] { display: block; opacity: 0; pointer-events: none; }
+
+/* poses are aligned so their own ground line sits at --line of the stage */
+.stage-hero { aspect-ratio: 2469 / 705; }
+
+.tangle {
+  position: absolute; left: 30%; bottom: 34.5%; width: 15%; aspect-ratio: 965 / 605;
+  cursor: pointer; background: none; border: 0; padding: 0;
+}
+.tangle.pulled { pointer-events: none; }
+
+/* unravel: five registered frames, stepped by JS; each sits so its lowest point rests on the line */
+.unravel { position: absolute; inset: 0 auto 0 19%; width: 34%; pointer-events: none; transition: opacity .5s; }
+.unravel .frames { position: absolute; inset: 0; }
+.unravel .ink { position: absolute; left: 0; width: 100%; visibility: hidden; }
+.unravel .ink.on { visibility: visible; }
+.unravel.done { opacity: 0; }
+#tangle:is(:hover, :focus-visible) ~ .unravel .boil-target { animation: boil .375s steps(1) infinite; }
+.note { position: absolute; font-style: italic; color: var(--pencil); font-size: 1.05rem; white-space: nowrap; }
+/* the note ends where the arrow starts; the arrow, placed in stage terms, lands on the tangle's shoulder */
+.note-bug { right: 75.5%; bottom: 72%; max-width: 11em; white-space: normal; text-wrap: balance; text-align: right; line-height: 1.3; transition: opacity .3s; }
+.note-arrow { position: absolute; left: 25%; bottom: 59%; width: clamp(2.6rem, 5.5%, 5rem); color: var(--pencil); transform: scaleY(-1) rotate(-12deg); transition: opacity .3s; pointer-events: none; }
+.tangle.pulled ~ :is(.note-bug, .note-arrow) { opacity: 0; }
+
+/* ---------- the thread: drawn as it scrolls into view ---------- */
+.thread { position: relative; width: 100%; }
+.thread > .ink { width: 100%; }
+@supports (animation-timeline: view()) {
+  .thread > .ink { animation: draw linear both; animation-timeline: view(); animation-range: entry 10% cover 45%; }
+  @keyframes draw { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+}
+/* a snag: a hard problem, tied off */
+.snag { position: absolute; top: 50%; width: clamp(3.5rem, 7vw, 5.5rem); translate: -50% -50%; }
+.snag .ink { width: 100%; background: currentColor; }
+.snag .snag-note { position: absolute; left: 50%; bottom: 120%; translate: -50% 0; font-style: italic; font-size: .95rem; color: var(--pencil); white-space: nowrap; opacity: 0; transition: opacity .3s; }
+.snag:is(:hover, :focus-within) .snag-note { opacity: 1; }
+
+/* ---------- magic: one line pulled out of the screen lifts off as a kite ---------- */
+.magic { margin-top: var(--section-gap); }
+/* drawn at the hero figure's scale: the stage runs past the column so the crouched figure's head
+   matches the seated one's; the empty ground on the left is what spills out */
+.stage-magic { aspect-ratio: 2520 / 1120; width: 112%; margin: 0 0 0 -6%; }
+.stage-magic .ink { position: absolute; inset: 0; visibility: hidden; }
+.stage-magic .ink.on { visibility: visible; }
+.stage-magic:not(.lifted) { cursor: pointer; }
+.note-kite { left: 70%; top: 2%; opacity: 0; transition: opacity .4s .3s; }
+.stage-magic.lifted .note-kite { opacity: 1; }
+
+/* ---------- work: objects resting on the thread ---------- */
+.work { margin-top: var(--section-gap); }
+.shelf { position: relative; display: flex; align-items: flex-end; gap: clamp(2rem, 9vw, 8rem); padding: 0 6%; margin-top: 3rem; }
+.shelf + .thread { margin-top: -.9rem; }
+.thing { position: relative; display: grid; justify-items: center; gap: .9rem; text-align: center; }
+.thing .obj { display: block; width: var(--w); translate: 0 var(--sink, 0); }
+.thing .label { position: absolute; top: 100%; margin-top: 2.2rem; white-space: nowrap; }
+.thing .label small { display: block; color: var(--ink-soft); font-size: .9rem; }
+.thing .ring { position: absolute; inset: -14% -18% -10%; width: auto; opacity: 0; clip-path: inset(0 100% 0 0); transition: opacity .1s, clip-path .45s cubic-bezier(.3,.7,.4,1); pointer-events: none; }
+.thing:is(:hover, :focus-within) .ring { opacity: 1; clip-path: inset(0 0 0 0); }
+.thing a { background: none; }
+.thing a::after { content: ""; position: absolute; inset: -20%; }
+
+/* ---------- contact ---------- */
+.contact { margin-top: var(--section-gap); padding-bottom: calc(var(--section-gap) * .6); }
+.stage-contact { aspect-ratio: 2502 / 729; }
+/* the address, with the arrow running down to the parcel */
+.write { position: absolute; left: 15%; bottom: 62%; margin: 0; font-style: italic; color: var(--pencil); }
+.write .arrow { position: absolute; left: 70%; top: 85%; width: 3.4rem; transform: rotate(48deg); transform-origin: 0 0; pointer-events: none; transition: opacity .4s; }
+
+/* the parcel rests on the line, a little behind the walker, with a balloon tied to its bow.
+   Sent, the balloon fills, the string goes taut, and it carries the parcel off; the figure turns to wave.
+   The waving figure is scaled and set on the walker's ground line (both measured from the art);
+   each drawing shows only its own band, so the line stays one line. */
+.parcel { position: absolute; left: 24%; bottom: 5.9%; width: 24%; aspect-ratio: 1524 / 653; transform-origin: 70.9% 51.3%; }
+.parcel > .boil { position: absolute; inset: 0; }
+.parcel .ink { position: absolute; left: 0; top: 0; width: 100%; }
+.parcel .aloft { opacity: 0; }
+/* the string's loose end (57.7% 96% of the balloon) is tied at the bow knot (70.9% 51.3% of the parcel) */
+.parcel .balloon { left: 53%; top: -115.7%; width: 31%; transform-origin: 57.7% 96%; }
+/* the swap dissolves, like the kite's frames: the walking figure's band fades out as the waving one fades in */
+.stage-contact .walker:not(.walker-band) { clip-path: polygon(0 0, 59.4% 0, 59.4% 100%, 72.3% 100%, 72.3% 0, 100% 0, 100% 100%, 0 100%); }
+.stage-contact .walker-band { clip-path: inset(0 27.7% 0 59.4%); }
+.stage-contact .waver { left: 30.3%; top: 12.3%; width: 70.6%; clip-path: inset(0 41.1% 0 42.4%); opacity: 0; }
+.stage-contact :is(.waver, .walker-band) { transition: opacity .7s ease-in-out .8s; }
+.sent .walker-band { opacity: 0; }
+.sent .write .arrow { opacity: 0; }
+.sent .waver { opacity: 1; }
+.sent .parcel .rest { opacity: 0; }
+.sent .parcel .aloft { opacity: 1; }
+.sent .parcel { opacity: 0; }
+.note-sent { left: 27%; bottom: 14%; margin: 0; }
+.note-sent:empty { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .sent .parcel { animation: lift-off 3.8s both; }
+  .sent .parcel .balloon { animation: fill-up 3.8s ease-in-out both; }
+  /* the dangling string shows once it is off the ground */
+  .sent .parcel :is(.rest, .aloft) { transition: opacity .3s 1.05s; }
+  .note-sent { animation: write-in .8s ease-out both; }
+  /* waits while the balloon fills, tips up by the bow as the string goes taut, then rises and sways */
+  @keyframes lift-off {
+    0%, 24% { opacity: 1; translate: 0 0; rotate: 0deg; scale: 1; animation-timing-function: ease-out; }
+    32% { translate: 0 -6%; rotate: -5deg; animation-timing-function: ease-in-out; }
+    50% { translate: -4% -70%; rotate: 3deg; scale: .95; }
+    72% { translate: -10% -170%; rotate: -3deg; scale: .85; opacity: 1; }
+    100% { translate: -20% -340%; rotate: 2deg; scale: .7; opacity: 0; }
+  }
+  /* a breath in, a swell that stretches the string taut, then a sway against the parcel */
+  @keyframes fill-up {
+    0% { scale: 1; rotate: 0deg; }
+    9% { scale: .96 1.03; }
+    22% { scale: 1.14; rotate: 3deg; }
+    46% { scale: 1.14; rotate: -4deg; }
+    70% { scale: 1.14; rotate: 3deg; }
+    100% { scale: 1.14; rotate: -2deg; }
+  }
+  @keyframes write-in { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 -5% 0 0); } }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .thread > .ink { clip-path: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+@media (max-width: 40rem) {
+  .shelf { flex-wrap: wrap; row-gap: 6rem; }
+}

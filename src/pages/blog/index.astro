@@ -1,0 +1,26 @@
+---
+// Loose ends: every post, pegged to a washing line, newest first.
+import Base from "../../layouts/Base.astro";
+import "../../styles/blog.css";
+import WashingLine from "../../components/blog/WashingLine.astro";
+import Slip from "../../components/blog/Slip.astro";
+import { posts, typedDate } from "../../lib/posts";
+import { BLOG } from "../../site.mjs";
+const all = await posts();
+---
+<Base title={BLOG.name} description={BLOG.description} inBlog>
+  <link slot="head" rel="alternate" type="application/rss+xml" title={BLOG.name} href="/blog/feed.xml">
+  <main>
+    <section class="blog-head" id="top-of-page" aria-labelledby="blog-h">
+      <h1 id="blog-h">{BLOG.name}</h1>
+      <p class="soft lede">Thoughts I've tied off and hung up to dry. Mostly front end, now and then people.</p>
+    </section>
+    <section aria-label="Posts">
+      <WashingLine>
+        {all.map(p => (
+          <Slip href={`/blog/${p.id}/`} title={p.data.title} date={p.data.date} dateText={typedDate(p.data.date)} description={p.data.description} />
+        ))}
+      </WashingLine>
+    </section>
+  </main>
+</Base>

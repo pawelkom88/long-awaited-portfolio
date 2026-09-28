@@ -1,0 +1,24 @@
+---
+import { ink } from "../../lib/ink";
+import { EMAIL } from "../../site.mjs";
+---
+<section class="contact" aria-labelledby="contact-h">
+  <h2 id="contact-h">Start a conversation</h2>
+  <p class="soft">A small question, a big idea, or just hello.</p>
+  <div class="stage stage-contact">
+    <div class="boil">
+      <!-- the walker twice: everything but the figure's band stays, the band dissolves into the waving figure -->
+      <span class="ink pose walker" style={`--src:url(${ink("figure-walking")}); --ar:2502/729; top:0`}></span>
+      <span class="ink pose walker walker-band" style={`--src:url(${ink("figure-walking")}); --ar:2502/729; top:0`}></span>
+      <span class="ink pose waver" style={`--src:url(${ink("figure-waving")}); --ar:2452/856`}></span>
+    </div>
+    <!-- the parcel rests on the line with a balloon tied to its bow, so it has a reason to rise -->
+    <div class="parcel"><div class="boil">
+      <span class="ink balloon" style={`--src:url(${ink("balloon")}); --ar:390/936`}></span>
+      <span class="ink rest" style={`--src:url(${ink("postcard-rest")}); --ar:1524/653`}></span>
+      <span class="ink aloft" style={`--src:url(${ink("postcard-bow")}); --ar:1524/1007`}></span>
+    </div></div>
+    <p class="note note-sent" aria-live="polite"></p>
+    <p class="write"><a href={`mailto:${EMAIL}`} id="send">{EMAIL}</a><span class="ink arrow" style={`--src:url(${ink("pencil/arrow")}); --ar:199/112`}></span></p>
+  </div>
+</section>

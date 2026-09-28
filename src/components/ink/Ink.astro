@@ -1,0 +1,9 @@
+---
+// One drawing, painted with the ink colour through its own shape (see .ink in ink.css).
+// ar defaults to the drawing's own viewBox; pass it only to override.
+import { ink, ratio } from "../../lib/ink";
+interface Props { name: string; ar?: string; class?: string; style?: string; [attr: string]: unknown }
+const { name, ar: given, class: cls, style = "", ...attrs } = Astro.props;
+const ar = given ?? (name.startsWith("pencil/") ? undefined : ratio(name));
+---
+<span class:list={["ink", cls]} style={`--src:url(${ink(name)});${ar ? ` --ar:${ar};` : ""} ${style}`.trim()} {...attrs}></span>

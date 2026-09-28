@@ -1,0 +1,27 @@
+---
+// The page header: the PK mark, the way to the notes, the tune and the bulb on its cord.
+import Ink from "./ink/Ink.astro";
+import { AUTHOR, BLOG } from "../site.mjs";
+interface Props { home?: boolean; inBlog?: boolean }
+const { home = false, inBlog = false } = Astro.props;
+---
+<header>
+  <a class="mark" href={home ? "#top" : "/"} aria-label={home ? `${AUTHOR}, back to the top` : `${AUTHOR}, the story`}>
+    <svg class="boil" viewBox="0 0 64 40" aria-hidden="true">
+      <!-- P, K, and the loose end of a string tied between them -->
+      <path d="M8.5 34.5 C8 25 9.2 14 8.8 5.6 M9.2 6.4 C15 3.6 22.5 4.2 23.6 9.8 C24.6 15.6 17.4 18.8 9.6 18.6"/>
+      <path d="M34.2 5.2 C34.8 15 33.6 25 34.4 34.8 M49.6 6.2 C44.6 11.4 39.6 16.2 34.6 20.2 C39.8 24.6 45.2 29.6 50.8 35"/>
+      <path class="tail" d="M23.2 14.6 C26.6 17.8 30 17.4 34.4 19.4 M50.6 35.2 c3.6 1.4 6.2 -.4 8.8 -2.8"/>
+    </svg>
+    <span class="mark-name">{AUTHOR}</span>
+  </a>
+  <a class="to-notes" href="/blog/" aria-current={inBlog ? "page" : undefined}>{BLOG.name.toLowerCase()}</a>
+  <button type="button" class="sound" id="sound" aria-label="Music" aria-pressed="false">tune<Ink name="pencil/strike" ar="320/42" class="pencil strike" /></button>
+  <button type="button" class="switch" id="theme" aria-label="Night" aria-pressed="false">
+    <span class="rays pencil boil"><Ink name="bulb-rays" ar="654/661" /></span>
+    <span class="bulb boil"><Ink name="bulb" ar="302/1806" /></span>
+    <span class="cord"><Ink name="pull-cord" ar="158/2086" /></span>
+    <span class="hint">pull</span>
+  </button>
+</header>
+<Ink name="rubber" ar="535/455" class="rubber" aria-hidden="true" />

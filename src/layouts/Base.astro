@@ -1,0 +1,50 @@
+---
+// Every page: the theme bootstrap before first paint, the paper, the header, the tune and the switch.
+import "../styles/ink.css";
+import "../styles/rub.css";
+import BoilFilters from "../components/ink/BoilFilters.astro";
+import Header from "../components/Header.astro";
+interface Props {
+  title: string;
+  description?: string;
+  home?: boolean;
+  inBlog?: boolean;
+  bodyId?: string;
+}
+const { title, description, home, inBlog, bodyId } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+{description && <meta name="description" content={description}>}
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href={canonical}>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<slot name="head" />
+<script is:inline>
+// before first paint: re-apply a theme the switch pinned, so there is no flash
+try {
+  const scheme = localStorage.getItem("color-scheme");
+  if (scheme) {
+    document.documentElement.dataset.theme = scheme;
+    document.querySelector('meta[name="color-scheme"]').content = scheme;
+  }
+} catch {}
+</script>
+<!-- the page turn waits for the top of the page, so it never fades into blank paper -->
+<link rel="expect" href="#top-of-page" blocking="render">
+</head>
+<body id={bodyId}>
+<BoilFilters />
+<Header home={home} inBlog={inBlog} />
+<slot />
+<script>
+  import "../scripts/theme.js";
+  import "../scripts/sound.js";
+</script>
+</body>
+</html>

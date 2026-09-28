@@ -1,0 +1,18 @@
+---
+// One of the ink drawings in a post, with a pencil caption. It boils while you point at it.
+//   <Sketch name="pose-reading" alt="The figure sits on the line, reading">caption, optional</Sketch>
+// name is a drawing in src/assets/ink; its shape sets its own proportions.
+import Ink from "../ink/Ink.astro";
+interface Props { name: string; alt: string; width?: string }
+const { name, alt, width = "min(100%, 34rem)" } = Astro.props;
+---
+<figure class="sketch boil-on-hover" style={`--w:${width}`}>
+  <div class="drawing boil-target" role="img" aria-label={alt}><Ink name={name} /></div>
+  {Astro.slots.has("default") && <figcaption><slot /></figcaption>}
+</figure>
+
+<style>
+  .sketch { grid-column: wide; justify-self: center; width: var(--w); margin: 2.4rem 0 2.6rem; }
+  .drawing { width: 100%; }
+  figcaption { margin-top: .6rem; font-style: italic; color: var(--pencil); font-size: 1rem; text-align: center; text-wrap: balance; }
+</style>

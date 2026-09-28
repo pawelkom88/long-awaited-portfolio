@@ -1,0 +1,34 @@
+---
+import { ink } from "../../lib/ink";
+---
+<section class="hero" id="top-of-page">
+  <h1>A conversation between code and people.</h1>
+  <p class="soft lede">I'm Pawel, a front end developer in Newport, Wales. I hold the line between what gets built and who it's for.</p>
+  <div class="stage stage-hero">
+    <div class="boil">
+      <!-- the seated figure in registered layers (tools/split-seated.py), so it can glance at the knot and swing its legs -->
+      <div class="pose seated" id="seated" style="--ar:2469/705; top:0">
+        <span class="ink" style={`--src:url(${ink("seated-body")})`}></span>
+        <span class="ink shin shin-l" style={`--src:url(${ink("seated-shin-l")})`}></span>
+        <span class="ink shin shin-r" style={`--src:url(${ink("seated-shin-r")})`}></span>
+        <span class="head">
+          <span class="ink" style={`--src:url(${ink("seated-head")})`}></span>
+          <span class="ink eye" style={`--src:url(${ink("seated-eye")})`}></span>
+        </span>
+      </div>
+      <span class="ink pose" id="dozing" hidden style={`--src:url(${ink("figure-dozing")}); --ar:2427/719; top:-3.2%`}></span>
+      <span class="ink pose" id="waving" hidden style={`--src:url(${ink("figure-waving")}); --ar:2452/856; top:-48.4%`}></span>
+      <span class="ink pose" id="pulling" hidden style={`--src:url(${ink("figure-pulling")}); --ar:2358/735; top:-35.4%`}></span>
+    </div>
+    <button class="tangle" id="tangle" type="button" aria-label="Pull the loose end"></button>
+    <div class="unravel" id="unravel" aria-hidden="true"><div class="frames boil-target">
+      <span class="ink on" style={`--src:url(${ink("tangle-s1")}); --ar:2048/880; top:26.9%`}></span>
+      <span class="ink" style={`--src:url(${ink("tangle-s2")}); --ar:2048/880; top:23.6%`}></span>
+      <span class="ink" style={`--src:url(${ink("tangle-s3")}); --ar:2048/880; top:22.5%`}></span>
+      <span class="ink" style={`--src:url(${ink("tangle-s4")}); --ar:2048/880; top:31.2%`}></span>
+      <span class="ink" style={`--src:url(${ink("tangle-s5")}); --ar:2048/880; top:41.2%`}></span>
+    </div></div>
+    <p class="note note-bug">most conversations start a bit knotted</p>
+    <span class="ink note-arrow" aria-hidden="true" style={`--src:url(${ink("pencil/arrow")}); --ar:199/112`}></span>
+  </div>
+</section>

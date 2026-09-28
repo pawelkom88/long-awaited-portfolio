@@ -1,0 +1,34 @@
+---
+import Base from "../layouts/Base.astro";
+import { ink } from "../lib/ink";
+---
+<Base title="Not here">
+<main>
+  <section class="lost" id="top-of-page" aria-labelledby="lost-h">
+    <h1 id="lost-h">This page isn't in the drawer.</h1>
+    <p class="soft">It may have moved, or it never existed.</p>
+
+    <div class="stage stage-lost" id="lost" role="img" aria-label="The figure searches a drawer and holds it up, empty">
+      <div class="boil" style="position:absolute; inset:0">
+        <span class="ink pose" id="searching" style={`--src:url(${ink("pose-drawer")}); --ar:2520/720; top:0`}></span>
+        <span class="ink pose" id="empty" hidden style={`--src:url(${ink("pose-empty-drawer")}); --ar:2520/720; top:0`}></span>
+      </div>
+      <p class="note note-lost"><span class="ink arrow" style={`--src:url(${ink("pencil/arrow")}); --ar:199/112`}></span>nope, empty</p>
+    </div>
+
+    <p class="home"><a href="/">Back to the start</a></p>
+  </section>
+</main>
+<script>
+  import "../scripts/lost.js";
+</script>
+</Base>
+
+<style>
+.lost { min-height: 80vh; }
+.stage-lost { aspect-ratio: 2520 / 720; max-width: 58rem; }
+.stage-lost .note-lost { left: 76%; top: 30%; opacity: 0; transition: opacity .4s; }
+.stage-lost.found-nothing .note-lost { opacity: 1; }
+.note-lost .arrow { position: absolute; right: 100%; top: .5em; width: 4rem; margin-right: .4rem; transform: scale(-1, 1) rotate(-12deg); }
+.home { margin-top: 3rem; }
+</style>

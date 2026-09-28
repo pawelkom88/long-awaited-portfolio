@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
-"""Split svg/figure-seated.svg into registered layers for the hero idle animation.
+"""Split src/assets/ink/figure-seated.svg into registered layers for the hero idle animation.
 Every layer keeps the original 0 0 2469 705 viewBox, so they stack exactly and CSS can
 turn the head, move the eye and swing the shins about fixed pivots.
   seated-head.svg   the head ring (no eye)
   seated-eye.svg    the eye dot alone
   seated-shin-l/r   each lower leg, clipped just under the knee
   seated-body.svg   everything else
-usage: tools/split-seated.py   (run from design/ink)"""
+usage: tools/split-seated.py   (run from anywhere)"""
 import os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from svgp import paths, subpaths
+INK = os.path.join(os.path.dirname(__file__), "../../../src/assets/ink")  
 
-src = open("svg/figure-seated.svg").read()
+src = open(f"{INK}/figure-seated.svg").read()
 P = [subpaths(d) for d in paths(src)]
 VB = 'viewBox="0 0 2469 705"'
 
@@ -43,5 +44,5 @@ out = {
     "seated-body": svg(rest, FULL + BOTH),
 }
 for name, text in out.items():
-    open(f"svg/{name}.svg", "w").write(text)
-    print(f"svg/{name}.svg {len(text)} bytes")
+    open(f"{INK}/{name}.svg", "w").write(text)
+    print(f"{INK}/{name}.svg {len(text)} bytes")

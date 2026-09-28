@@ -1,0 +1,40 @@
+---
+// An aside, written in pencil on a small torn slip and pegged over the text.
+//   <Note>Firefox has no view timelines yet, so it gets the page already drawn.</Note>
+//   <Note label="tip">…</Note>
+import Ink from "../ink/Ink.astro";
+interface Props { label?: string }
+const { label = "note" } = Astro.props;
+---
+<aside class="slip-note" aria-label={label}>
+  <Ink name="peg" class="peg" aria-hidden="true" />
+  <p class="label typed">{label}</p>
+  <div class="words"><slot /></div>
+</aside>
+
+<style>
+  .slip-note {
+    position: relative;
+    isolation: isolate;
+    justify-self: end;
+    width: min(100%, 24rem);
+    margin: 2.4rem -1.5rem 2.2rem 0;
+    padding: 1.4rem 1.4rem 1.8rem;
+    rotate: 1.2deg;
+  }
+  /* the paper, torn off the bottom of a page; a layer of its own, so the tear never clips the peg */
+  .slip-note::before, .slip-note::after { content: ""; position: absolute; inset: 0; z-index: -1; }
+  .slip-note::before {
+    background: var(--sheet) url("../../assets/paper/grain.webp") 0 0 / 800px;
+    background-blend-mode: multiply;
+    clip-path: polygon(0 0, 100% 0, 100% 94%, 96% 100%, 91% 95%, 85% 99%, 78% 94%, 70% 98%, 62% 94%, 55% 99%, 47% 95%, 39% 99%, 31% 94%, 24% 98%, 16% 94%, 9% 99%, 4% 95%, 0 98%);
+  }
+  .slip-note::after { z-index: -2; inset: 0 0 6%; box-shadow: 0 16px 26px -20px var(--shade); }
+  /* the peg bites the top edge; rendered by <Ink>, so outside this file's scope */
+  .slip-note :global(.peg) { position: absolute; left: 50%; top: -2.4rem; height: 3.8rem; width: auto; translate: -50% 0; }
+  .label { margin: 0 0 .4rem; font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-soft); }
+  .words { font-style: italic; color: var(--pencil); font-size: 1.08rem; line-height: 1.45; }
+  .words :global(p) { margin: 0; }
+  .words :global(p + p) { margin-top: .6rem; }
+  @media (max-width: 40rem) { .slip-note { margin-right: 0; rotate: .6deg; } }
+</style>

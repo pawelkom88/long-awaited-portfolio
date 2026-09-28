@@ -1,0 +1,19 @@
+---
+import { ink } from "../../lib/ink";
+---
+<!-- tall on purpose: the scroll through it lifts the kite -->
+<section class="magic" id="lift" aria-labelledby="magic-h">
+  <div class="pin">
+    <h2 id="magic-h">Every interface is a kite</h2>
+    <p class="soft">Someone on the ground has to keep talking to it.</p>
+    <div class="stage stage-magic" id="magic" role="img" aria-label="The figure pulls a string out of a laptop screen and it rises into a kite">
+      <div class="boil" style="position:absolute; inset:0">
+        <span class="ink on" style={`--src:url(${ink("magic-before")}); --ar:2520/1120`}></span>
+        <span class="ink" style={`--src:url(${ink("magic-kite")}); --ar:2520/1120`}></span>
+        <span class="ink" style={`--src:url(${ink("magic-standing")}); --ar:2520/1120`}></span>
+      </div>
+      <p class="note note-kite">there it goes</p>
+      <p class="note aside aside-css note-nojs">no JS moved this kite</p>
+    </div>
+  </div>
+</section>

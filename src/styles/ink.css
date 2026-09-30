@@ -164,6 +164,8 @@ header { position: relative; display: flex; justify-content: space-between; padd
 /* ---------- the sound: a pencil note, struck through while it is off ---------- */
 .sound {
   position: relative; margin: 0 5.5rem 0 auto;
+  /* a bare box, so iOS lays the word out like the links beside it instead of dropping it a few px */
+  appearance: none; align-self: center;
   font: inherit; font-style: italic; color: var(--pencil); background: none; border: 0; cursor: pointer;
 }
 @media (max-width: 36rem) {

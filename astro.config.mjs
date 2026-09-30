@@ -33,6 +33,8 @@ export default defineConfig({
   },
   vite: {
     // drawings are masks referenced from inline styles; as files they cache once instead of repeating in every page
-    build: { assetsInlineLimit: 0 },
+    // with no Safari target the CSS minifier folds animation-timeline into the animation shorthand,
+    // which Safari drops whole: every scroll timeline dies and the kite's three frames stack up
+    build: { assetsInlineLimit: 0, cssTarget: ["chrome120", "edge120", "firefox128", "safari18", "ios18"] },
   },
 });

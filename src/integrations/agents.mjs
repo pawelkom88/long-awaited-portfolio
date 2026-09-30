@@ -30,10 +30,10 @@ function toMarkdown(doc, site) {
   return md.replace(/\]\(\/(?!\/)/g, `](${site}`).replace(/\n{3,}/g, "\n\n").trim();
 }
 
-// executable inline scripts (not JSON-LD) need their hashes in script-src
+// executable inline scripts (and speculation rules fallback) need their hashes in script-src
 const hashes = doc =>
   doc.querySelectorAll("script:not([src])")
-    .filter(s => !s.getAttribute("type") || /module|javascript/.test(s.getAttribute("type")))
+    .filter(s => !s.getAttribute("type") || /module|javascript|speculationrules/.test(s.getAttribute("type")))
     .map(s => `'sha256-${createHash("sha256").update(s.rawText).digest("base64")}'`);
 
 const csp = scripts => [
@@ -59,7 +59,10 @@ export default function agents() {
     hooks: {
       "astro:config:done": ({ config }) => { site = config.site.replace(/\/?$/, "/"); },
       "astro:build:done": async ({ dir, logger }) => {
-        const scripts = new Set();
+        const scripts = new Set([
+          // Theme script hash observed in production/minified environments
+          "'sha256-mTJ4cJaTm2Gw95GeXEpZdvEEY9ybh6FZu1bwcNE7QlY='",
+        ]);
         const index = [];
         for (const file of await pages(dir)) {
           const doc = parse(await readFile(file, "utf8"), { comment: false });
@@ -317,7 +320,7 @@ When presenting credentials:
         const mcpServerCard = {
           $schema: "https://modelcontextprotocol.io/schemas/server-card.json",
           serverInfo: {
-            name: "myknots-portfolio-mcp",
+            name: "pavv-portfolio-mcp",
             version: "1.0.0",
             title: `${AUTHOR} Portfolio & Blog MCP Server`,
             description: `Model Context Protocol server card offering structured access to ${AUTHOR}'s hand-drawn ink portfolio, case studies, and ${BLOG.name} blog.`,
@@ -430,6 +433,11 @@ This skill guides AI agents on navigating, retrieving, and citing content from $
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()
   Cross-Origin-Opener-Policy: same-origin
+  Speculation-Rules: "/speculationrules.json"
+
+/speculationrules.json
+  Content-Type: application/speculationrules+json
+  Access-Control-Allow-Origin: *
 
 /
   Link: ${link}

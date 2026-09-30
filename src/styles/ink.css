@@ -10,7 +10,7 @@
   --measure: 34rem;
   /* a lighter sheet laid on the paper, and the typewriter that writes on it */
   --sheet: color-mix(in oklab, var(--paper), white 38%);
-  --typed: "American Typewriter", "Courier Prime", "Courier New", ui-monospace, monospace;
+  --typed: "American Typewriter", "Courier Prime", "Courier New", "Liberation Mono", ui-monospace, monospace;
   --gutter: clamp(1rem, 5vw, 4rem);
   /* the one gap between chapters of the page */
   --section-gap: clamp(8.5rem, 4rem + 8vw, 11rem);
@@ -66,7 +66,7 @@ html {
 body {
   margin: 0;
   color: var(--ink);
-  font: 1.125rem/1.6 "Iowan Old Style", "Palatino", Georgia, serif;
+  font: 1.125rem/1.6 "Iowan Old Style", "Palatino", "Palatino Linotype", "URW Palladio L", P052, Georgia, serif;
   overflow-x: clip; /* clip, not hidden: hidden would make body a scroller and break sticky + view timelines */
 }
 ::selection { background: color-mix(in oklab, var(--pencil) 22%, transparent); }
@@ -106,6 +106,7 @@ a { color: inherit; text-decoration: none; background: linear-gradient(var(--pen
 a:hover, a:focus-visible { background-size: 100% 1.5px; }
 
 header { position: relative; display: flex; justify-content: space-between; padding: 1.5rem var(--gutter); font-size: 1rem; color: var(--ink-soft); }
+.nav-site { display: flex; align-items: center; margin-left: auto; }
 
 /* ---------- the mark: PK in pen, with the name in pencil on hover ---------- */
 .mark { position: relative; display: inline-flex; align-items: center; gap: .6rem; color: var(--ink); background: none; }
@@ -119,7 +120,8 @@ header { position: relative; display: flex; justify-content: space-between; padd
 /* ---------- the way to the notes: a pencil word beside the tune ---------- */
 .to-notes { margin: 0 1.6rem 0 auto; font-style: italic; color: var(--pencil); white-space: nowrap; }
 .to-notes + .to-bench { margin-left: 0; }
-.to-notes + .sound { margin-left: 0; }
+:is(.to-notes, .nav-site) + .sound { margin-left: 0; }
+.to-notes, .sound { min-height: 24px; display: inline-flex; align-items: center; padding: .25rem .5rem; }
 .to-notes[aria-current="page"] { background-size: 100% 1.5px; }
 
 /* ---------- turning to another page of the notebook ----------
@@ -161,8 +163,11 @@ header { position: relative; display: flex; justify-content: space-between; padd
 
 /* ---------- the sound: a pencil note, struck through while it is off ---------- */
 .sound {
-  position: relative; margin: 0 5.5rem 0 auto; padding: 0;
+  position: relative; margin: 0 5.5rem 0 auto;
   font: inherit; font-style: italic; color: var(--pencil); background: none; border: 0; cursor: pointer;
+}
+@media (max-width: 36rem) {
+  .sound { margin-right: calc(var(--bulb) * 2.6 + 1.2rem); }
 }
 .sound .strike { position: absolute; left: -15%; top: 30%; width: 130%; rotate: -4deg; clip-path: inset(0); transition: clip-path .6s cubic-bezier(.3,.7,.4,1); }
 .sound[aria-pressed="true"] .strike { clip-path: inset(0 0 0 100%); }
@@ -205,7 +210,7 @@ p { max-width: var(--measure); }
    or every registered top: % offset resolves against zero height */
 .stage > .boil { position: absolute; inset: 0; }
 .pose { position: absolute; left: 0; width: 100%; transition: opacity .2s; }
-.pose[hidden] { display: block; opacity: 0; pointer-events: none; visibility: hidden; }
+.pose[hidden] { display: none; }
 
 /* poses are aligned so their own ground line sits at --line of the stage */
 .stage-hero { aspect-ratio: 2469 / 705; }
@@ -219,8 +224,8 @@ p { max-width: var(--measure); }
 /* unravel: five registered frames, stepped by JS; each sits so its lowest point rests on the line */
 .unravel { position: absolute; inset: 0 auto 0 19%; width: 34%; pointer-events: none; transition: opacity .5s; }
 .unravel .frames { position: absolute; inset: 0; }
-.unravel .ink { position: absolute; left: 0; width: 100%; visibility: hidden; }
-.unravel .ink.on { visibility: visible; }
+.unravel .ink { position: absolute; left: 0; width: 100%; }
+.unravel .ink:not(.on) { display: none; }
 .unravel.done { opacity: 0; }
 #tangle:is(:hover, :focus-visible) ~ .unravel .boil-target { animation: boil .375s steps(1) infinite; }
 .note { position: absolute; font-style: italic; color: var(--pencil); font-size: 1.05rem; white-space: nowrap; }
@@ -268,9 +273,14 @@ p { max-width: var(--measure); }
 .stage-magic { aspect-ratio: 2520 / 1120; width: 112%; margin: 0 0 0 -6%; }
 .stage-magic .ink { position: absolute; inset: 0; visibility: hidden; }
 .stage-magic .ink.on { visibility: visible; }
-.stage-magic:not(.lifted) { cursor: pointer; }
 .note-kite { left: 70%; top: 2%; opacity: 0; transition: opacity .4s .3s; }
 .stage-magic.lifted .note-kite { opacity: 1; }
+
+/* ---------- static sections render on demand without disturbing scroll timelines ---------- */
+.care, .knots, .shelf, .stage-contact {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
+}
 
 /* ---------- work: objects resting on the thread ---------- */
 .work { margin-top: var(--section-gap); }

@@ -6,20 +6,34 @@ const show = id => {
 };
 // the figure dozes while you are away and waves when you come back
 let away = false;
+let waveTimer;
 document.addEventListener("visibilitychange", () => {
-  if (document.hidden) { away = true; show("dozing"); return; }
+  if (document.prerendering) return;
+  if (document.hidden) {
+    clearTimeout(waveTimer);
+    away = true;
+    show("dozing");
+    return;
+  }
   if (!away) return;
+  away = false;
+  clearTimeout(waveTimer);
   show("waving");
-  setTimeout(() => show(tangle.classList.contains("pulled") ? "pulling" : "seated"), 1600);
+  waveTimer = setTimeout(() => show(tangle?.classList.contains("pulled") ? "pulling" : "seated"), 1600);
 });
+if (document.prerendering) {
+  document.addEventListener("prerenderingchange", () => {
+    away = false;
+  }, { once: true });
+}
 // pull the loose end
 const tangle = document.getElementById("tangle");
 const unravel = document.getElementById("unravel");
 const frames = [...unravel.querySelectorAll(".ink")];
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 tangle.addEventListener("click", () => {
-  tangle.disabled = true;
-  tangle.tabIndex = -1;
+  if (tangle.getAttribute("aria-disabled") === "true") return;
+  tangle.setAttribute("aria-disabled", "true");
   const status = document.getElementById("tangle-status");
   if (status) status.textContent = "The loose end has been pulled. The line is now unknotted.";
   tangle.classList.add("pulled");
@@ -38,15 +52,23 @@ tangle.addEventListener("click", () => {
 const scrolled = CSS.supports("(animation-timeline: view()) and (animation-range: entry)");
 if (!scrolled || still) {
   const magic = document.getElementById("magic");
-  const kite = [...magic.querySelectorAll(".ink")];
-  const lift = () => {
-    if (magic.classList.contains("lifted")) return;
-    magic.classList.add("lifted");
-    if (still) { kite.forEach((k, i) => k.classList.toggle("on", i === kite.length - 1)); return; }
-    kite.forEach((_, i) => setTimeout(() => kite.forEach((o, j) => o.classList.toggle("on", j === i)), i * 700));
-  };
-  magic.addEventListener("click", lift);
-  new IntersectionObserver(([e], io) => { if (e.isIntersecting) { setTimeout(lift, 600); io.disconnect(); } }, { threshold: .8 }).observe(magic);
+  if (magic) {
+    const kite = [...magic.querySelectorAll(".ink")];
+    const lift = () => {
+      if (magic.classList.contains("lifted")) return;
+      magic.classList.add("lifted");
+      if (still) { kite.forEach((k, i) => k.classList.toggle("on", i === kite.length - 1)); return; }
+      kite.forEach((_, i) => setTimeout(() => kite.forEach((o, j) => o.classList.toggle("on", j === i)), i * 700));
+    };
+    const observeMagic = () => {
+      new IntersectionObserver(([e], io) => { if (e.isIntersecting) { setTimeout(lift, 600); io.disconnect(); } }, { threshold: .8 }).observe(magic);
+    };
+    if (document.prerendering) {
+      document.addEventListener("prerenderingchange", observeMagic, { once: true });
+    } else {
+      observeMagic();
+    }
+  }
 }
 // reach out and the balloon lifts the parcel off the line; the figure waves it away
 const contact = document.querySelector(".stage-contact");
@@ -69,6 +91,8 @@ if (snag) {
     void work.offsetWidth; // restart the wave on every pluck
     work.classList.add("plucked");
     note.textContent = "still holds";
+    const live = document.getElementById("snag-live");
+    if (live) live.textContent = "Thread plucked: still holds";
     document.dispatchEvent(new CustomEvent("ink:pluck"));
     clearTimeout(rest);
     rest = setTimeout(() => {
@@ -86,9 +110,5 @@ if (snag) {
   snag.addEventListener("blur", () => snag.classList.remove("dismissed"));
 }
 
-// prevent empty hash navigation jumps for shelf items
-document.querySelectorAll('.shelf a[href="#"]').forEach(a => {
-  a.addEventListener("click", e => e.preventDefault());
-});
 
 console.log(`%cyou found the loose end. say hello: ${EMAIL}`, "font: italic 14px Georgia, serif; color: #a32c1b");

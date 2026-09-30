@@ -5,3 +5,11 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  NETLIFY_FEEDBACK_DISABLED = "true"
+  SITE_URL = "https://pavv.dev"
+
+[[redirects]]
+  from = "https://myknots.netlify.app/*"
+  to = "https://pavv.dev/:splat"
+  status = 301
+  force = true

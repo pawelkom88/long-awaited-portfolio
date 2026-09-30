@@ -11,8 +11,8 @@ const isDark = () => (root.dataset.theme ?? systemScheme()) === "dark";
 const sync = () => {
   if (!btn) return;
   const dark = isDark();
-  btn.setAttribute("aria-pressed", dark);
-  btn.setAttribute("aria-label", dark ? "Pull cord: switch to light theme" : "Pull cord: switch to dark theme");
+  btn.setAttribute("aria-pressed", dark ? "true" : "false");
+  btn.setAttribute("aria-label", "Dark theme");
 };
 
 const apply = scheme => {

@@ -15,10 +15,12 @@ const { home = false, inBlog = false, inProjects = false } = Astro.props;
     </svg>
     <span class="mark-name">{AUTHOR}</span>
   </a>
-  <a class="to-notes" href="/blog/" aria-current={inBlog ? "page" : undefined}>{BLOG.name.toLowerCase()}</a>
-  <a class="to-notes to-bench" href="/projects/" aria-current={inProjects ? "page" : undefined}>projects</a>
+  <nav aria-label="Site" class="nav-site">
+    <a class="to-notes" href="/blog/" aria-current={inBlog ? "page" : undefined}>{BLOG.name.toLowerCase()}</a>
+    <a class="to-notes to-bench" href="/projects/" aria-current={inProjects ? "page" : undefined}>projects</a>
+  </nav>
   <button type="button" class="sound" id="sound" aria-label="Tune music" aria-pressed="false">tune<Ink name="pencil/strike" ar="320/42" class="pencil strike" aria-hidden="true" /></button>
-  <button type="button" class="switch" id="theme" aria-label="Pull cord: switch to dark theme" aria-pressed="false">
+  <button type="button" class="switch" id="theme" aria-label="Dark theme" aria-pressed="false">
     <span class="rays pencil boil"><Ink name="bulb-rays" ar="654/661" /></span>
     <span class="bulb boil"><Ink name="bulb" ar="302/1806" /></span>
     <span class="cord"><Ink name="pull-cord" ar="158/2086" /></span>

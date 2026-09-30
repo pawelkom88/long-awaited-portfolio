@@ -161,19 +161,29 @@ try {
   remembered = localStorage.getItem("sound") === "on";
   playing = sessionStorage.getItem("sound") === "playing";
 } catch {}
-if (remembered) {
-  set(true, { remember: false });
-  if (playing) {
-    start();
-    const wake = e => {
-      if (on && ctx?.state !== "running" && !btn.contains(e.target)) start();
-    };
-    addEventListener("pointerdown", wake, { once: true, capture: true });
+
+const initAudio = () => {
+  if (remembered) {
+    set(true, { remember: false });
+    if (playing) {
+      start();
+      const wake = e => {
+        if (on && ctx?.state !== "running" && !btn.contains(e.target)) start();
+      };
+      addEventListener("pointerdown", wake, { once: true, capture: true });
+    }
   }
+};
+
+if (document.prerendering) {
+  document.addEventListener("prerenderingchange", initAudio, { once: true });
+} else {
+  initAudio();
 }
 
 // quiet while the tab is away
 document.addEventListener("visibilitychange", () => {
+  if (document.prerendering) return;
   if (!on || !ctx) return;
   if (document.hidden) stop();
   else start();

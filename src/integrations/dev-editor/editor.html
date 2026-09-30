@@ -1,0 +1,1689 @@
+<!doctype html>
+<html lang="en" data-editor-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notebook Post Editor · Local Development</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      --bg: #f5f2eb;
+      --surface: #fbf9f5;
+      --surface-subtle: #efebe2;
+      --border: #dfd8cb;
+      --border-dark: #b8aea0;
+      --ink: #1a1917;
+      --ink-soft: #635f56;
+      --ink-faint: #9c978d;
+      --pencil: #c83c23;
+      --pencil-soft: #e0775f;
+      --pencil-bg: rgba(200, 60, 35, 0.08);
+      --accent: #2c5282;
+      --accent-bg: rgba(44, 82, 130, 0.08);
+      --success: #237844;
+      --success-bg: rgba(35, 120, 68, 0.1);
+      --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-serif: "Newsreader", Georgia, Cambria, "Times New Roman", Times, serif;
+      --font-mono: ui-monospace, SFMono-Regular, "Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas, monospace;
+      --radius: 6px;
+      --radius-sm: 4px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+    }
+
+    [data-editor-theme="dark"] {
+      --bg: #14171d;
+      --surface: #1c2028;
+      --surface-subtle: #242933;
+      --border: #323946;
+      --border-dark: #475062;
+      --ink: #e8e4dc;
+      --ink-soft: #a8a49c;
+      --ink-faint: #6e6b64;
+      --pencil: #e0775f;
+      --pencil-soft: #ec947f;
+      --pencil-bg: rgba(224, 119, 95, 0.15);
+      --accent: #63b3ed;
+      --accent-bg: rgba(99, 179, 237, 0.12);
+      --success: #48bb78;
+      --success-bg: rgba(72, 187, 120, 0.15);
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 12px 32px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: var(--font-ui); font-size: 14px; background: var(--bg); color: var(--ink); line-height: 1.5; overflow: hidden; }
+
+    /* Layout */
+    #app { display: flex; flex-direction: column; height: 100vh; }
+
+    /* Top Bar */
+    header.app-bar {
+      height: 52px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      gap: 12px;
+      z-index: 20;
+      flex-shrink: 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+    .brand svg { width: 20px; height: 20px; color: var(--pencil); flex-shrink: 0; }
+    .brand .badge {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: var(--pencil-bg);
+      color: var(--pencil);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .active-post-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      max-width: 320px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .active-post-badge .slug {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 2px 6px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--ink-soft);
+    }
+    .status-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .status-tag.draft { background: rgba(220, 140, 20, 0.15); color: #c47d10; }
+    .status-tag.published { background: var(--success-bg); color: var(--success); }
+
+    .stats-tag {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--ink-soft);
+      padding: 2px 7px;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .dirty-indicator {
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      margin-left: 6px;
+    }
+    .dirty-indicator.saved { color: var(--success); }
+    .dirty-indicator.unsaved { color: var(--pencil); }
+    .dirty-indicator.saving { color: var(--ink-faint); }
+    .dirty-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .view-toggles {
+      display: flex;
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2px;
+      gap: 2px;
+    }
+    .view-btn {
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 500;
+      background: none;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--ink-soft);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .view-btn:hover { color: var(--ink); }
+    .view-btn.active {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--ink);
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn:hover { border-color: var(--border-dark); background: var(--surface-subtle); }
+    .btn-primary {
+      background: var(--pencil);
+      color: #fff;
+      border-color: var(--pencil);
+    }
+    .btn-primary:hover { background: #b0331c; border-color: #b0331c; color: #fff; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; }
+    .btn-icon { padding: 6px; }
+
+    /* Main Workspace */
+    .workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Sidebar */
+    aside.sidebar {
+      width: 290px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: width 0.2s ease;
+    }
+    aside.sidebar.collapsed { width: 0; border-right: none; }
+
+    .sidebar-header {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sidebar-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-soft);
+    }
+    .search-input {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 13px;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--ink-soft); }
+
+    .sidebar-sections {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .section-block {
+      border-bottom: 1px solid var(--border);
+      padding: 12px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-soft);
+    }
+
+    /* Post items */
+    .post-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+    .post-item {
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+    .post-item:hover { background: var(--surface-subtle); }
+    .post-item.active {
+      background: var(--bg);
+      border-color: var(--border-dark);
+      box-shadow: var(--shadow-sm);
+    }
+    .post-item .item-title {
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--ink);
+      line-height: 1.3;
+    }
+    .post-item .item-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--ink-faint);
+    }
+    .post-item .item-slug { font-family: var(--font-mono); }
+
+    /* Assets List */
+    .assets-dropzone {
+      border: 2px dashed var(--border-dark);
+      border-radius: var(--radius);
+      padding: 14px 10px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--ink-soft);
+      cursor: pointer;
+      background: var(--bg);
+      transition: all 0.15s ease;
+      margin-bottom: 10px;
+    }
+    .assets-dropzone.drag-active {
+      border-color: var(--pencil);
+      background: var(--pencil-bg);
+      color: var(--pencil);
+    }
+    .assets-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .asset-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .asset-card img {
+      width: 100%;
+      height: 60px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      background: var(--surface-subtle);
+    }
+    .asset-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .asset-name {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--ink);
+    }
+    .asset-actions {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .asset-actions .btn { flex: 1; padding: 2px 4px; font-size: 10px; justify-content: center; }
+
+    /* Center / Editor Area */
+    .editor-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      overflow: hidden;
+      min-width: 320px;
+    }
+
+    /* Metadata Bar */
+    .metadata-bar {
+      padding: 10px 16px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .metadata-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .field-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .field-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .field-input {
+      padding: 5px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 13px;
+      outline: none;
+    }
+    .field-input:focus { border-color: var(--ink-soft); }
+    .field-title { flex: 1; font-weight: 600; font-size: 14px; min-width: 200px; }
+    .field-desc { width: 100%; }
+
+    /* Toolbar */
+    .editor-toolbar {
+      padding: 6px 14px;
+      background: var(--surface-subtle);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .toolbar-group {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .toolbar-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+    .tool-btn {
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--ink);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.1s ease;
+    }
+    .tool-btn:hover { background: var(--bg); border-color: var(--border-dark); }
+    .tool-btn.component-btn {
+      color: var(--pencil);
+      font-weight: 600;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+    .tool-btn.component-btn:hover {
+      background: var(--pencil-bg);
+      border-color: var(--pencil);
+    }
+
+    /* Textarea Area */
+    .editor-main {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+    #post-editor {
+      width: 100%;
+      height: 100%;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--ink);
+      background: var(--surface);
+      border: none;
+      resize: none;
+      outline: none;
+      tab-size: 2;
+      overflow-y: auto;
+    }
+    #post-editor.dragover {
+      background: var(--pencil-bg);
+      outline: 2px dashed var(--pencil);
+      outline-offset: -10px;
+    }
+
+    /* Live Preview Panel */
+    .preview-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg);
+      border-left: 1px solid var(--border);
+      overflow: hidden;
+      min-width: 320px;
+    }
+    .preview-header {
+      height: 40px;
+      padding: 0 12px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .preview-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-soft);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .preview-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .preview-viewport-wrapper {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      background: var(--bg);
+      overflow: hidden;
+      padding: 0;
+      position: relative;
+    }
+    .preview-viewport-wrapper.has-padding {
+      padding: 16px;
+    }
+    #preview-frame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #fff;
+      transition: width 0.25s ease, box-shadow 0.25s ease;
+    }
+    .preview-viewport-wrapper.has-padding #preview-frame {
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(2px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      width: min(520px, 92vw);
+      background: var(--surface);
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-header h3 { font-size: 15px; font-weight: 600; color: var(--ink); }
+    .modal-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .modal-footer {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      background: var(--surface-subtle);
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    /* Ink Picker Grid */
+    .ink-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 10px;
+    }
+    .ink-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      background: var(--bg);
+      transition: all 0.15s ease;
+    }
+    .ink-card:hover {
+      border-color: var(--pencil);
+      background: var(--pencil-bg);
+      transform: translateY(-2px);
+    }
+    .ink-preview {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+    }
+    .ink-preview img, .ink-preview svg { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .ink-name {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      text-align: center;
+      word-break: break-all;
+      color: var(--ink-soft);
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 200;
+      pointer-events: none;
+    }
+    .toast {
+      padding: 10px 16px;
+      border-radius: var(--radius);
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+      animation: toastIn 0.2s ease forwards;
+    }
+    .toast.success { background: #1c5230; color: #eafbe7; }
+    .toast.error { background: #822212; color: #faecea; }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Responsive view modes */
+    .workspace[data-view="editor"] .preview-container { display: none; }
+    .workspace[data-view="editor"] .editor-container { flex: 1; }
+    .workspace[data-view="preview"] .editor-container { display: none; }
+    .workspace[data-view="preview"] .preview-container { flex: 1; border-left: none; }
+    .workspace[data-view="split"] .editor-container { flex: 1; }
+    .workspace[data-view="split"] .preview-container { flex: 1; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Top Bar -->
+    <header class="app-bar">
+      <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+          <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+          <path d="M2 2l7.586 7.586"></path>
+          <circle cx="11" cy="11" r="2"></circle>
+        </svg>
+        <span>Loose Ends Editor</span>
+        <span class="badge">Local Dev</span>
+      </div>
+
+      <div class="active-post-badge" id="active-post-badge" style="display:none;">
+        <span class="slug" id="top-slug-display"></span>
+        <span class="status-tag" id="top-status-tag">Draft</span>
+        <span class="stats-tag" id="top-stats-tag">0 words · a 1 min read</span>
+        <div class="dirty-indicator saved" id="dirty-indicator">
+          <span class="dirty-dot"></span>
+          <span class="dirty-text">Saved</span>
+        </div>
+      </div>
+
+      <div class="nav-controls">
+        <div class="view-toggles">
+          <button class="view-btn" data-view-target="editor" title="Editor Only">Editor</button>
+          <button class="view-btn active" data-view-target="split" title="Split View">Split</button>
+          <button class="view-btn" data-view-target="preview" title="Preview Only">Preview</button>
+        </div>
+
+        <button class="btn btn-primary" id="btn-save" title="Save post (⌘S)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+            <polyline points="7 3 7 8 15 8"></polyline>
+          </svg>
+          <span>Save</span>
+          <kbd style="opacity:0.7; font-size:10px; font-family:var(--font-mono)">⌘S</kbd>
+        </button>
+
+        <a class="btn" id="btn-external-link" href="#" target="_blank" title="Open post in a new tab">
+          <span>Open Post</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="workspace" data-view="split" id="workspace">
+      <!-- Left Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title-row">
+            <span class="sidebar-title">Posts</span>
+            <button class="btn btn-sm btn-primary" id="btn-new-post-modal" title="Create new blog post">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>New Post</span>
+            </button>
+          </div>
+          <input type="text" class="search-input" id="post-search" placeholder="Search posts...">
+        </div>
+
+        <div class="sidebar-sections">
+          <div class="section-block">
+            <ul class="post-list" id="post-list"></ul>
+          </div>
+
+          <!-- Assets Section for Active Post -->
+          <div class="section-block" id="assets-section" style="display:none;">
+            <div class="section-header">
+              <span>Post Assets</span>
+              <span id="asset-count-badge" style="font-family:var(--font-mono); font-size:11px;">0</span>
+            </div>
+            <div class="assets-dropzone" id="sidebar-dropzone">
+              <span>Drop image here or click to upload</span>
+              <input type="file" id="file-input" accept="image/*" style="display:none;">
+            </div>
+            <div class="assets-grid" id="assets-grid"></div>
+          </div>
+
+          <!-- Ink Library Shortcut -->
+          <div class="section-block">
+            <button class="btn btn-sm" id="btn-open-ink-picker" style="width:100%; justify-content:center;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+              <span>Ink Drawings Catalog</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Center Editor Container -->
+      <main class="editor-container" id="editor-container">
+        <!-- Metadata Form Bar -->
+        <div class="metadata-bar" id="metadata-bar">
+          <div class="metadata-row">
+            <div class="field-group" style="flex:1;">
+              <span class="field-label">Title</span>
+              <input type="text" class="field-input field-title" id="meta-title" placeholder="Post title">
+            </div>
+
+            <div class="field-group">
+              <span class="field-label">Date</span>
+              <input type="date" class="field-input" id="meta-date">
+            </div>
+
+            <div class="field-group" style="margin-left: 6px;">
+              <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-weight:600; font-size:12px; color:var(--ink-soft);">
+                <input type="checkbox" id="meta-draft">
+                <span>Draft (dev only)</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="metadata-row">
+            <div class="field-group" style="width:100%;">
+              <span class="field-label">Description</span>
+              <input type="text" class="field-input field-desc" id="meta-description" placeholder="A short one-line summary for slips and meta tags">
+            </div>
+          </div>
+        </div>
+
+        <!-- Component Insertion Toolbar -->
+        <div class="editor-toolbar">
+          <div class="toolbar-group">
+            <button class="tool-btn component-btn" id="tool-note" title="Insert <Note> aside slip">&lt;Note&gt;</button>
+            <button class="tool-btn component-btn" id="tool-codesheet" title="Insert fenced code sheet">&lt;CodeSheet&gt;</button>
+            <button class="tool-btn component-btn" id="tool-figure" title="Insert <Figure> image slip">&lt;Figure&gt;</button>
+            <button class="tool-btn component-btn" id="tool-polaroid" title="Insert <Polaroid> snapshot">&lt;Polaroid&gt;</button>
+            <button class="tool-btn component-btn" id="tool-sketch" title="Insert boiling ink <Sketch>">&lt;Sketch&gt;</button>
+            <button class="tool-btn component-btn" id="tool-pullquote" title="Insert torn strip <Pullquote>">&lt;Pullquote&gt;</button>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <div class="toolbar-group">
+            <button class="tool-btn" id="tool-h2" title="Heading 2">H2</button>
+            <button class="tool-btn" id="tool-h3" title="Heading 3">H3</button>
+            <button class="tool-btn" id="tool-bold" title="Bold (⌘B)"><strong>B</strong></button>
+            <button class="tool-btn" id="tool-italic" title="Italic (⌘I)"><em>I</em></button>
+            <button class="tool-btn" id="tool-code" title="Inline Code">`code`</button>
+            <button class="tool-btn" id="tool-link" title="Link (⌘K)">Link</button>
+            <button class="tool-btn" id="tool-quote" title="Blockquote">&gt; Quote</button>
+            <button class="tool-btn" id="tool-ul" title="Bullet List">• List</button>
+            <button class="tool-btn" id="tool-ol" title="Numbered List">1. List</button>
+          </div>
+        </div>
+
+        <!-- Textarea Writing Surface -->
+        <div class="editor-main" id="editor-drop-zone">
+          <textarea id="post-editor" spellcheck="true" placeholder="Loading post content..."></textarea>
+        </div>
+      </main>
+
+      <!-- Right Live Preview Panel -->
+      <aside class="preview-container" id="preview-container">
+        <div class="preview-header">
+          <div class="preview-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <span>Live Preview</span>
+          </div>
+
+          <div class="preview-controls">
+            <div class="view-toggles">
+              <button class="view-btn active" id="btn-viewport-full" title="Desktop View (100%)">Desktop</button>
+              <button class="view-btn" id="btn-viewport-tablet" title="Tablet View (768px)">Tablet</button>
+              <button class="view-btn" id="btn-viewport-mobile" title="Mobile View (390px)">Mobile</button>
+            </div>
+
+            <button class="btn btn-sm btn-icon" id="btn-toggle-preview-theme" title="Toggle Day/Night Preview Theme">
+              <span id="preview-theme-icon">🌙</span>
+            </button>
+
+            <button class="btn btn-sm btn-icon" id="btn-refresh-preview" title="Reload Preview Frame">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="preview-viewport-wrapper" id="preview-wrapper">
+          <iframe id="preview-frame" src="about:blank"></iframe>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Modal: New Post -->
+  <div class="modal-backdrop" id="modal-new-post">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Create New Blog Post</h3>
+        <button class="btn btn-sm btn-icon" id="btn-close-new-post">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label class="field-label">Post Title</label>
+          <input type="text" class="field-input" id="new-post-title" placeholder="e.g. Drawing with Ink in the Browser" autofocus>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label class="field-label">Slug (Folder Name)</label>
+          <input type="text" class="field-input" id="new-post-slug" placeholder="drawing-with-ink-in-the-browser">
+          <small style="color:var(--ink-faint); font-size:11px;">Folder will be created at: <code>src/content/blog/&lt;slug&gt;/index.mdx</code></small>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label class="field-label">Short Description (Optional)</label>
+          <input type="text" class="field-input" id="new-post-desc" placeholder="One-line summary for slips and meta tags">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btn-cancel-new-post">Cancel</button>
+        <button class="btn btn-primary" id="btn-confirm-new-post">Create Post</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Ink Drawings Picker -->
+  <div class="modal-backdrop" id="modal-ink-picker">
+    <div class="modal-card" style="width:min(720px, 94vw);">
+      <div class="modal-header">
+        <h3>Ink Drawings Library</h3>
+        <button class="btn btn-sm btn-icon" id="btn-close-ink-picker">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="text" class="search-input" id="ink-search" placeholder="Search ink sketches (e.g. pose, knot, bulb, paperclip)...">
+        <div class="ink-grid" id="ink-grid"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btn-close-ink-picker-2">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
+    // State
+    let posts = [];
+    let currentSlug = null;
+    let currentPost = null;
+    let isDirty = false;
+    let inkSketches = [];
+    let previewTheme = "light";
+    let isSyncingFrontmatter = false;
+
+    const editorEl = document.getElementById("post-editor");
+    const previewFrame = document.getElementById("preview-frame");
+    const dirtyIndicator = document.getElementById("dirty-indicator");
+    const metaTitle = document.getElementById("meta-title");
+    const metaDate = document.getElementById("meta-date");
+    const metaDraft = document.getElementById("meta-draft");
+    const metaDescription = document.getElementById("meta-description");
+
+    function showToast(msg, type = "info") {
+      const container = document.getElementById("toast-container");
+      const toast = document.createElement("div");
+      toast.className = "toast " + type;
+      toast.textContent = msg;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transition = "opacity 0.2s ease";
+        setTimeout(() => toast.remove(), 200);
+      }, 3000);
+    }
+
+    function setDirty(dirty) {
+      isDirty = dirty;
+      dirtyIndicator.className = "dirty-indicator " + (dirty ? "unsaved" : "saved");
+      dirtyIndicator.querySelector(".dirty-text").textContent = dirty ? "Unsaved changes" : "Saved";
+    }
+
+    function calculateStats(text) {
+      const body = text.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n?/, "");
+      const clean = body.replace(/<[^>]+>|import .+ from .+;?/g, " ");
+      const words = clean.split(/\s+/).filter(Boolean).length;
+      const minutes = Math.max(1, Math.round(words / 220));
+      const article = /^(8|11|18)/.test(String(minutes)) ? "an" : "a";
+      return { words, readingTime: `${article} ${minutes} min read` };
+    }
+
+    function updateStats() {
+      const stats = calculateStats(editorEl.value || "");
+      const el = document.getElementById("top-stats-tag");
+      if (el) el.textContent = `${stats.words} words · ${stats.readingTime}`;
+    }
+
+    // View toggles (Editor / Split / Preview)
+    document.querySelectorAll("[data-view-target]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-view-target]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        const target = btn.getAttribute("data-view-target");
+        document.getElementById("workspace").setAttribute("data-view", target);
+      });
+    });
+
+    // Viewport presets for preview
+    const previewWrapper = document.getElementById("preview-wrapper");
+    document.getElementById("btn-viewport-full").addEventListener("click", e => {
+      document.querySelectorAll(".preview-controls .view-btn").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      previewFrame.style.width = "100%";
+      previewWrapper.classList.remove("has-padding");
+    });
+    document.getElementById("btn-viewport-tablet").addEventListener("click", e => {
+      document.querySelectorAll(".preview-controls .view-btn").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      previewFrame.style.width = "768px";
+      previewWrapper.classList.add("has-padding");
+    });
+    document.getElementById("btn-viewport-mobile").addEventListener("click", e => {
+      document.querySelectorAll(".preview-controls .view-btn").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      previewFrame.style.width = "390px";
+      previewWrapper.classList.add("has-padding");
+    });
+
+    // Theme toggle for preview
+    document.getElementById("btn-toggle-preview-theme").addEventListener("click", () => {
+      previewTheme = previewTheme === "light" ? "dark" : "light";
+      document.getElementById("preview-theme-icon").textContent = previewTheme === "light" ? "🌙" : "☀️";
+      try {
+        if (previewFrame.contentDocument) {
+          previewFrame.contentDocument.documentElement.dataset.theme = previewTheme;
+          const meta = previewFrame.contentDocument.querySelector('meta[name="color-scheme"]');
+          if (meta) meta.content = previewTheme;
+        }
+      } catch {}
+    });
+
+    // Refresh preview button
+    document.getElementById("btn-refresh-preview").addEventListener("click", () => {
+      if (currentSlug) {
+        previewFrame.src = "/blog/" + currentSlug + "/";
+        showToast("Preview refreshed");
+      }
+    });
+
+    // Load Posts List
+    async function loadPosts() {
+      try {
+        const res = await fetch("/api/dev-editor/posts");
+        const data = await res.json();
+        posts = data.posts || [];
+        renderPostsList();
+        if (!currentSlug && posts.length > 0) {
+          selectPost(posts[0].slug);
+        }
+      } catch (err) {
+        showToast("Failed to load posts: " + err.message, "error");
+      }
+    }
+
+    function renderPostsList() {
+      const listEl = document.getElementById("post-list");
+      const search = (document.getElementById("post-search").value || "").toLowerCase();
+      listEl.innerHTML = "";
+
+      const filtered = posts.filter(p => p.title.toLowerCase().includes(search) || p.slug.toLowerCase().includes(search));
+
+      filtered.forEach(post => {
+        const li = document.createElement("li");
+        li.className = "post-item" + (post.slug === currentSlug ? " active" : "");
+        li.innerHTML = `
+          <div class="item-title">${escapeHtml(post.title || post.slug)}</div>
+          <div class="item-meta">
+            <span class="status-tag ${post.draft ? "draft" : "published"}">${post.draft ? "Draft" : "Published"}</span>
+            <span class="item-slug">${post.slug}</span>
+            <span>${post.date || ""}</span>
+          </div>
+        `;
+        li.addEventListener("click", () => {
+          if (isDirty) {
+            if (!confirm("You have unsaved changes. Discard and switch post?")) return;
+          }
+          selectPost(post.slug);
+        });
+        listEl.appendChild(li);
+      });
+    }
+
+    document.getElementById("post-search").addEventListener("input", renderPostsList);
+
+    // Select and load a post
+    async function selectPost(slug) {
+      try {
+        currentSlug = slug;
+        renderPostsList();
+
+        const res = await fetch("/api/dev-editor/post?slug=" + encodeURIComponent(slug));
+        if (!res.ok) throw new Error("Could not load post data.");
+        currentPost = await res.json();
+
+        // Update active badge in top bar
+        document.getElementById("active-post-badge").style.display = "flex";
+        document.getElementById("top-slug-display").textContent = slug;
+        const statusTag = document.getElementById("top-status-tag");
+        const isDraft = Boolean(currentPost.frontmatter.draft);
+        statusTag.textContent = isDraft ? "Draft" : "Published";
+        statusTag.className = "status-tag " + (isDraft ? "draft" : "published");
+
+        // Update external link
+        document.getElementById("btn-external-link").href = "/blog/" + slug + "/";
+
+        // Update editor textarea
+        editorEl.value = currentPost.raw || "";
+        updateStats();
+
+        // Update frontmatter bar
+        isSyncingFrontmatter = true;
+        metaTitle.value = currentPost.frontmatter.title || "";
+        metaDate.value = currentPost.frontmatter.date ? String(currentPost.frontmatter.date).slice(0, 10) : "";
+        metaDraft.checked = isDraft;
+        metaDescription.value = currentPost.frontmatter.description || "";
+        isSyncingFrontmatter = false;
+
+        // Render assets
+        renderAssets(currentPost.assets || []);
+
+        // Load preview frame
+        previewFrame.src = "/blog/" + slug + "/";
+
+        setDirty(false);
+      } catch (err) {
+        showToast("Error loading post: " + err.message, "error");
+      }
+    }
+
+    // Render Assets in Sidebar
+    function renderAssets(assets) {
+      const section = document.getElementById("assets-section");
+      section.style.display = "block";
+      document.getElementById("asset-count-badge").textContent = assets.length;
+
+      const grid = document.getElementById("assets-grid");
+      grid.innerHTML = "";
+
+      if (assets.length === 0) {
+        grid.innerHTML = `<div style="grid-column: span 2; font-size:11px; color:var(--ink-faint); text-align:center; padding: 8px;">No images yet. Drop one above!</div>`;
+        return;
+      }
+
+      assets.forEach(asset => {
+        const card = document.createElement("div");
+        card.className = "asset-card";
+        card.innerHTML = `
+          <img src="${asset.url}" alt="${asset.name}" loading="lazy">
+          <div class="asset-info">
+            <span class="asset-name" title="${asset.name}">${asset.name}</span>
+            <div class="asset-actions">
+              <button class="btn btn-sm btn-insert-fig" title="Insert as <Figure>">+ Fig</button>
+              <button class="btn btn-sm btn-insert-pol" title="Insert as <Polaroid>">+ Pol</button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector(".btn-insert-fig").addEventListener("click", () => {
+          insertAssetIntoPost(asset.name, "figure");
+        });
+        card.querySelector(".btn-insert-pol").addEventListener("click", () => {
+          insertAssetIntoPost(asset.name, "polaroid");
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Insert Asset into editor MDX
+    function insertAssetIntoPost(filename, type = "figure") {
+      const ext = filename.slice(filename.lastIndexOf("."));
+      const baseName = filename.slice(0, filename.lastIndexOf("."));
+      let varName = baseName.replace(/[-_]+([a-zA-Z0-9])/g, (_, c) => c.toUpperCase());
+      if (/^[0-9]/.test(varName)) varName = "img" + varName;
+      if (!varName) varName = "imageAsset";
+
+      const importStmt = `import ${varName} from "./${filename}";`;
+      const altText = baseName.replace(/[-_]+/g, " ");
+
+      let content = editorEl.value;
+
+      // 1. Check if import statement already exists
+      if (!content.includes(importStmt)) {
+        // Find closing --- of frontmatter
+        const fmMatch = content.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n/);
+        if (fmMatch) {
+          const insertIdx = fmMatch[0].length;
+          content = content.slice(0, insertIdx) + importStmt + "\n" + content.slice(insertIdx);
+        } else {
+          content = importStmt + "\n\n" + content;
+        }
+      }
+
+      // 2. Insert component at cursor
+      const snippet = type === "polaroid"
+        ? `\n<Polaroid src={${varName}} alt="${altText}" tilt={-2} side="center">Caption</Polaroid>\n`
+        : `\n<Figure src={${varName}} alt="${altText}">Caption</Figure>\n`;
+
+      const start = editorEl.selectionStart;
+      const end = editorEl.selectionEnd;
+      editorEl.value = content.slice(0, start) + snippet + content.slice(end);
+      editorEl.selectionStart = editorEl.selectionEnd = start + snippet.length;
+      editorEl.focus();
+
+      setDirty(true);
+      showToast(`Inserted ${type === "polaroid" ? "<Polaroid>" : "<Figure>"} for ${filename}`, "success");
+    }
+
+    // Save Post
+    async function savePost() {
+      if (!currentSlug) return;
+      dirtyIndicator.className = "dirty-indicator saving";
+      dirtyIndicator.querySelector(".dirty-text").textContent = "Saving...";
+
+      try {
+        const content = editorEl.value;
+        const res = await fetch("/api/dev-editor/post", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: currentSlug, content })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Save failed.");
+
+        setDirty(false);
+        showToast("Post saved successfully", "success");
+
+        // Reload post data to keep frontmatter synced
+        const pRes = await fetch("/api/dev-editor/post?slug=" + encodeURIComponent(currentSlug));
+        if (pRes.ok) {
+          currentPost = await pRes.json();
+          renderAssets(currentPost.assets || []);
+        }
+
+        // Refresh preview iframe
+        setTimeout(() => {
+          previewFrame.src = "/blog/" + currentSlug + "/";
+        }, 300);
+
+        // Also refresh post list metadata in background
+        const listRes = await fetch("/api/dev-editor/posts");
+        if (listRes.ok) {
+          const listData = await listRes.json();
+          posts = listData.posts || [];
+          renderPostsList();
+        }
+      } catch (err) {
+        setDirty(true);
+        showToast("Error saving post: " + err.message, "error");
+      }
+    }
+
+    document.getElementById("btn-save").addEventListener("click", savePost);
+
+    // Frontmatter Bar -> Textarea Sync
+    function syncFrontmatterToTextarea() {
+      if (isSyncingFrontmatter || !currentSlug) return;
+      let text = editorEl.value;
+      const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+
+      const title = metaTitle.value.trim();
+      const date = metaDate.value.trim();
+      const draft = metaDraft.checked;
+      const desc = metaDescription.value.trim();
+
+      if (match) {
+        let yaml = match[1];
+        // replace title
+        if (/^title:.*$/m.test(yaml)) {
+          yaml = yaml.replace(/^title:.*$/m, "title: " + JSON.stringify(title));
+        } else {
+          yaml = "title: " + JSON.stringify(title) + "\n" + yaml;
+        }
+
+        // replace description
+        if (/^description:.*$/m.test(yaml)) {
+          yaml = yaml.replace(/^description:.*$/m, "description: " + JSON.stringify(desc));
+        } else {
+          yaml += "\ndescription: " + JSON.stringify(desc);
+        }
+
+        // replace date
+        if (date) {
+          if (/^date:.*$/m.test(yaml)) {
+            yaml = yaml.replace(/^date:.*$/m, "date: " + date);
+          } else {
+            yaml += "\ndate: " + date;
+          }
+        }
+
+        // replace draft
+        if (/^draft:.*$/m.test(yaml)) {
+          yaml = yaml.replace(/^draft:.*$/m, "draft: " + draft);
+        } else {
+          yaml += "\ndraft: " + draft;
+        }
+
+        const newFm = "---\n" + yaml.trim() + "\n---";
+        text = text.replace(/^---\r?\n[\s\S]*?\r?\n---/, newFm);
+      } else {
+        const newFm = "---\ntitle: " + JSON.stringify(title) + "\ndescription: " + JSON.stringify(desc) + "\ndate: " + date + "\ndraft: " + draft + "\n---\n\n";
+        text = newFm + text;
+      }
+
+      editorEl.value = text;
+      setDirty(true);
+      updateStats();
+
+      const statusTag = document.getElementById("top-status-tag");
+      statusTag.textContent = draft ? "Draft" : "Published";
+      statusTag.className = "status-tag " + (draft ? "draft" : "published");
+    }
+
+    [metaTitle, metaDate, metaDraft, metaDescription].forEach(input => {
+      input.addEventListener("input", syncFrontmatterToTextarea);
+      input.addEventListener("change", syncFrontmatterToTextarea);
+    });
+
+    // Textarea -> Frontmatter Bar Sync
+    editorEl.addEventListener("input", () => {
+      setDirty(true);
+      updateStats();
+      if (isSyncingFrontmatter) return;
+
+      const text = editorEl.value;
+      const match = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      if (match) {
+        const yaml = match[1];
+        isSyncingFrontmatter = true;
+
+        const titleMatch = yaml.match(/^title:\s*(".*?"|'.*?'|.*)$/m);
+        if (titleMatch) {
+          let t = titleMatch[1].trim();
+          if ((t.startsWith('"') && t.endsWith('"')) || (t.startsWith("'") && t.endsWith("'"))) t = t.slice(1, -1);
+          metaTitle.value = t;
+        }
+
+        const descMatch = yaml.match(/^description:\s*(".*?"|'.*?'|.*)$/m);
+        if (descMatch) {
+          let d = descMatch[1].trim();
+          if ((d.startsWith('"') && d.endsWith('"')) || (d.startsWith("'") && d.endsWith("'"))) d = d.slice(1, -1);
+          metaDescription.value = d;
+        }
+
+        const dateMatch = yaml.match(/^date:\s*(\S+)/m);
+        if (dateMatch) {
+          metaDate.value = dateMatch[1].trim().slice(0, 10);
+        }
+
+        const draftMatch = yaml.match(/^draft:\s*(\S+)/m);
+        if (draftMatch) {
+          const isDraft = draftMatch[1].trim() === "true";
+          metaDraft.checked = isDraft;
+          const statusTag = document.getElementById("top-status-tag");
+          statusTag.textContent = isDraft ? "Draft" : "Published";
+          statusTag.className = "status-tag " + (isDraft ? "draft" : "published");
+        }
+
+        isSyncingFrontmatter = false;
+      }
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener("keydown", e => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        savePost();
+      }
+    });
+
+    editorEl.addEventListener("keydown", e => {
+      // Tab indentation (2 spaces)
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const start = editorEl.selectionStart;
+        const end = editorEl.selectionEnd;
+        if (e.shiftKey) {
+          // Outdent
+          const before = editorEl.value.slice(0, start);
+          if (before.endsWith("  ")) {
+            editorEl.value = before.slice(0, -2) + editorEl.value.slice(start);
+            editorEl.selectionStart = editorEl.selectionEnd = start - 2;
+          }
+        } else {
+          // Indent
+          editorEl.value = editorEl.value.slice(0, start) + "  " + editorEl.value.slice(end);
+          editorEl.selectionStart = editorEl.selectionEnd = start + 2;
+        }
+        setDirty(true);
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        wrapSelection("**", "**");
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "i") {
+        e.preventDefault();
+        wrapSelection("*", "*");
+      } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        wrapSelection("[", "](url)");
+      }
+    });
+
+    // Text formatting helper
+    function wrapSelection(prefix, suffix, placeholder = "text") {
+      const start = editorEl.selectionStart;
+      const end = editorEl.selectionEnd;
+      const val = editorEl.value;
+      const selected = val.slice(start, end);
+      const textToWrap = selected || placeholder;
+      const replacement = prefix + textToWrap + suffix;
+
+      editorEl.value = val.slice(0, start) + replacement + val.slice(end);
+      editorEl.focus();
+
+      if (!selected) {
+        editorEl.selectionStart = start + prefix.length;
+        editorEl.selectionEnd = start + prefix.length + placeholder.length;
+      } else {
+        editorEl.selectionStart = start;
+        editorEl.selectionEnd = start + replacement.length;
+      }
+      setDirty(true);
+    }
+
+    function insertSnippet(snippet) {
+      const start = editorEl.selectionStart;
+      const end = editorEl.selectionEnd;
+      const val = editorEl.value;
+      editorEl.value = val.slice(0, start) + snippet + val.slice(end);
+      editorEl.selectionStart = editorEl.selectionEnd = start + snippet.length;
+      editorEl.focus();
+      setDirty(true);
+    }
+
+    // Component Insertion Buttons
+    document.getElementById("tool-note").addEventListener("click", () => {
+      const selected = editorEl.value.slice(editorEl.selectionStart, editorEl.selectionEnd);
+      if (selected) {
+        wrapSelection('<Note label="note">\n', "\n</Note>");
+      } else {
+        insertSnippet('<Note label="note">\nAn aside, written in pencil on a torn slip.\n</Note>\n');
+      }
+    });
+
+    document.getElementById("tool-codesheet").addEventListener("click", () => {
+      const selected = editorEl.value.slice(editorEl.selectionStart, editorEl.selectionEnd);
+      const code = selected || 'console.log("Ink on paper");';
+      insertSnippet("\n```js title=\"example.js\" mark=\"1\"\n" + code + "\n```\n");
+    });
+
+    document.getElementById("tool-figure").addEventListener("click", () => {
+      const selected = editorEl.value.slice(editorEl.selectionStart, editorEl.selectionEnd);
+      if (currentPost && currentPost.assets && currentPost.assets.length > 0) {
+        insertAssetIntoPost(currentPost.assets[0].name, "figure");
+      } else {
+        insertSnippet("\n<Figure src={hero} alt=\"Description\">" + (selected || "Caption, optional") + "</Figure>\n");
+      }
+    });
+
+    document.getElementById("tool-polaroid").addEventListener("click", () => {
+      const selected = editorEl.value.slice(editorEl.selectionStart, editorEl.selectionEnd);
+      if (currentPost && currentPost.assets && currentPost.assets.length > 0) {
+        insertAssetIntoPost(currentPost.assets[0].name, "polaroid");
+      } else {
+        insertSnippet("\n<Polaroid src={photo} alt=\"Description\" tilt={-2} side=\"center\">" + (selected || "the desk, 2am") + "</Polaroid>\n");
+      }
+    });
+
+    document.getElementById("tool-sketch").addEventListener("click", () => {
+      openInkPickerModal();
+    });
+
+    document.getElementById("tool-pullquote").addEventListener("click", () => {
+      const selected = editorEl.value.slice(editorEl.selectionStart, editorEl.selectionEnd);
+      if (selected) {
+        wrapSelection('<Pullquote cite="">\n', "\n</Pullquote>");
+      } else {
+        insertSnippet('<Pullquote cite="">\nThe resting state is the finished drawing.\n</Pullquote>\n');
+      }
+    });
+
+    // Formatting buttons
+    document.getElementById("tool-h2").addEventListener("click", () => insertSnippet("\n## Heading 2\n\n"));
+    document.getElementById("tool-h3").addEventListener("click", () => insertSnippet("\n### Heading 3\n\n"));
+    document.getElementById("tool-bold").addEventListener("click", () => wrapSelection("**", "**"));
+    document.getElementById("tool-italic").addEventListener("click", () => wrapSelection("*", "*"));
+    document.getElementById("tool-code").addEventListener("click", () => wrapSelection("`", "`"));
+    document.getElementById("tool-link").addEventListener("click", () => wrapSelection("[", "](url)"));
+    document.getElementById("tool-quote").addEventListener("click", () => wrapSelection("> ", ""));
+    document.getElementById("tool-ul").addEventListener("click", () => insertSnippet("\n- Item 1\n- Item 2\n"));
+    document.getElementById("tool-ol").addEventListener("click", () => insertSnippet("\n1. Item 1\n2. Item 2\n"));
+
+    // File Upload Handler (Dropzone & Drag-over)
+    async function uploadFile(file) {
+      if (!currentSlug) {
+        showToast("Select or create a post before uploading images.", "error");
+        return;
+      }
+      showToast("Uploading " + file.name + "...", "info");
+
+      try {
+        const base64 = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const res = reader.result;
+            const b64 = res.slice(res.indexOf(",") + 1);
+            resolve(b64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        const res = await fetch("/api/dev-editor/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: currentSlug, filename: file.name, base64 })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Upload failed.");
+
+        showToast("Uploaded " + data.filename + "!", "success");
+
+        // Reload post assets
+        const postRes = await fetch("/api/dev-editor/post?slug=" + encodeURIComponent(currentSlug));
+        if (postRes.ok) {
+          currentPost = await postRes.json();
+          renderAssets(currentPost.assets || []);
+        }
+
+        // Insert figure automatically into editor
+        insertAssetIntoPost(data.filename, "figure");
+      } catch (err) {
+        showToast("Upload failed: " + err.message, "error");
+      }
+    }
+
+    // Sidebar Dropzone click & drag
+    const sidebarDropzone = document.getElementById("sidebar-dropzone");
+    const fileInput = document.getElementById("file-input");
+    sidebarDropzone.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", e => {
+      if (e.target.files && e.target.files[0]) {
+        uploadFile(e.target.files[0]);
+        fileInput.value = "";
+      }
+    });
+
+    sidebarDropzone.addEventListener("dragover", e => {
+      e.preventDefault();
+      sidebarDropzone.classList.add("drag-active");
+    });
+    sidebarDropzone.addEventListener("dragleave", () => sidebarDropzone.classList.remove("drag-active"));
+    sidebarDropzone.addEventListener("drop", e => {
+      e.preventDefault();
+      sidebarDropzone.classList.remove("drag-active");
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        uploadFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    // Editor Textarea Drag and Drop Image File directly onto text
+    editorEl.addEventListener("dragover", e => {
+      if (e.dataTransfer.types.includes("Files")) {
+        e.preventDefault();
+        editorEl.classList.add("dragover");
+      }
+    });
+    editorEl.addEventListener("dragleave", () => editorEl.classList.remove("dragover"));
+    editorEl.addEventListener("drop", e => {
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        e.preventDefault();
+        editorEl.classList.remove("dragover");
+        const file = e.dataTransfer.files[0];
+        if (file.type.startsWith("image/")) {
+          uploadFile(file);
+        }
+      }
+    });
+
+    // Modal: New Post
+    const modalNewPost = document.getElementById("modal-new-post");
+    const newPostTitle = document.getElementById("new-post-title");
+    const newPostSlug = document.getElementById("new-post-slug");
+    const newPostDesc = document.getElementById("new-post-desc");
+
+    document.getElementById("btn-new-post-modal").addEventListener("click", () => {
+      newPostTitle.value = "";
+      newPostSlug.value = "";
+      newPostDesc.value = "";
+      modalNewPost.classList.add("open");
+      newPostTitle.focus();
+    });
+
+    document.getElementById("btn-close-new-post").addEventListener("click", () => modalNewPost.classList.remove("open"));
+    document.getElementById("btn-cancel-new-post").addEventListener("click", () => modalNewPost.classList.remove("open"));
+
+    newPostTitle.addEventListener("input", () => {
+      const slugVal = newPostTitle.value
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+      newPostSlug.value = slugVal;
+    });
+
+    document.getElementById("btn-confirm-new-post").addEventListener("click", async () => {
+      const title = newPostTitle.value.trim();
+      const slug = newPostSlug.value.trim();
+      const description = newPostDesc.value.trim();
+
+      if (!title) {
+        alert("Please enter a title.");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/dev-editor/new-post", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, slug, description })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to create post.");
+
+        modalNewPost.classList.remove("open");
+        showToast('Created post "' + title + '"', "success");
+
+        await loadPosts();
+        selectPost(data.slug);
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
+
+    // Modal: Ink Drawings Picker
+    const modalInk = document.getElementById("modal-ink-picker");
+    const inkGrid = document.getElementById("ink-grid");
+    const inkSearch = document.getElementById("ink-search");
+
+    async function openInkPickerModal() {
+      modalInk.classList.add("open");
+      inkSearch.value = "";
+      if (inkSketches.length === 0) {
+        try {
+          const res = await fetch("/api/dev-editor/ink");
+          const data = await res.json();
+          inkSketches = data.sketches || [];
+        } catch {}
+      }
+      renderInkGrid();
+      inkSearch.focus();
+    }
+
+    function renderInkGrid() {
+      const q = (inkSearch.value || "").toLowerCase();
+      inkGrid.innerHTML = "";
+      const filtered = inkSketches.filter(name => name.toLowerCase().includes(q));
+
+      filtered.forEach(name => {
+        const card = document.createElement("div");
+        card.className = "ink-card";
+        card.innerHTML = `
+          <div class="ink-preview">
+            <img src="/api/dev-editor/ink-svg?name=${encodeURIComponent(name)}" alt="${name}" loading="lazy">
+          </div>
+          <span class="ink-name">${name}</span>
+        `;
+        card.addEventListener("click", () => {
+          modalInk.classList.remove("open");
+          const snippet = '\n<Sketch name="' + name + '" alt="' + name.replace(/-/g, " ") + '">Caption</Sketch>\n';
+          insertSnippet(snippet);
+          showToast('Inserted <Sketch name="' + name + '">', "success");
+        });
+        inkGrid.appendChild(card);
+      });
+    }
+
+    inkSearch.addEventListener("input", renderInkGrid);
+    document.getElementById("btn-open-ink-picker").addEventListener("click", openInkPickerModal);
+    document.getElementById("btn-close-ink-picker").addEventListener("click", () => modalInk.classList.remove("open"));
+    document.getElementById("btn-close-ink-picker-2").addEventListener("click", () => modalInk.classList.remove("open"));
+
+    function escapeHtml(str) {
+      return (str || "").replace(/[&<>'"]/g, tag => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;"
+      }[tag] || tag));
+    }
+
+    // Init
+    loadPosts();
+  </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ import sitemap from "@astrojs/sitemap";
 import { markLines } from "./src/lib/mark-lines.mjs";
 import { lastChanged } from "./src/lib/last-changed.mjs";
 import agents from "./src/integrations/agents.mjs";
+import devEditor from "./src/integrations/dev-editor.mjs";
 import { SITE_URL } from "./src/site.mjs";
 
 const changed = lastChanged(SITE_URL);
@@ -23,6 +24,7 @@ export default defineConfig({
       serialize: item => (changed.has(item.url) ? { ...item, lastmod: changed.get(item.url) } : item),
     }),
     agents(),
+    devEditor(),
   ],
   markdown: {
     // no syntax colour carnival: code is typed in the page's ink, with pencil on the lines that matter

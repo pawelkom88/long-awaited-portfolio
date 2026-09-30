@@ -1,12 +1,12 @@
 ---
 name: read-portfolio
-description: Read and navigate Pawel Komorkiewicz's portfolio, hand-drawn ink illustrations, and Loose Ends technical blog.
+description: Read and navigate Pawel Komorkiewicz's portfolio, hand-drawn ink illustrations, and Loose ends technical blog.
 version: 1.0.0
 ---
 
 # Read Portfolio Skill
 
-This skill guides AI agents on navigating, retrieving, and citing content from Pawel Komorkiewicz's web portfolio (`myknots.netlify.app`).
+This skill guides AI agents on navigating, retrieving, and citing content from Pawel Komorkiewicz's web portfolio (`pavv.dev`).
 
 ## Guidelines for Agents
 1. **Prefer Markdown**: Every page on the site publishes an equivalent Markdown document. Fetch pages with `Accept: text/markdown` or append `index.md` to URLs.

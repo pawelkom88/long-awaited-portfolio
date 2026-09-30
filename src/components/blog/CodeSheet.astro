@@ -8,7 +8,7 @@ const { "data-title": title, class: cls, ...attrs } = Astro.props;
 <div class="code-sheet">
   <Ink name="paperclip" class="clip" aria-hidden="true" />
   {title && <p class="title typed">{title}</p>}
-  <pre class={cls} {...attrs}><slot /></pre>
+  <pre class={cls} tabindex="0" role="region" aria-label={title ? `Code snippet: ${title}` : "Code snippet"} {...attrs}><slot /></pre>
 </div>
 
 <style>
@@ -25,8 +25,9 @@ const { "data-title": title, class: cls, ...attrs } = Astro.props;
   /* rendered by <Ink>, so outside this file's scope */
   .code-sheet :global(.clip) { position: absolute; z-index: 1; top: -.9rem; left: 1.5rem; width: 2rem; color: var(--ink); rotate: 10deg; }
   .title { position: absolute; top: .55rem; right: 1.6rem; margin: 0; font-size: .78rem; letter-spacing: .04em; color: var(--ink-soft); }
-  pre { margin: 0; font: .92rem/1.7 var(--typed); }
-  pre :global(code) { display: block; overflow-x: auto; padding: 0 1.6rem; tab-size: 2; font: inherit; }
+  pre { margin: 0; font: .92rem/1.7 var(--typed); overflow-x: auto; }
+  pre:focus-visible { outline: 2px solid var(--pencil); outline-offset: 2px; }
+  pre :global(code) { display: block; padding: 0 1.6rem; tab-size: 2; font: inherit; }
   pre :global(mark) {
     color: inherit;
     background: linear-gradient(transparent 12%, color-mix(in oklab, var(--pencil) 16%, transparent) 12% 92%, transparent 92%);

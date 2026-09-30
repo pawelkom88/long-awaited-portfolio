@@ -6,6 +6,7 @@ import BoilFilters from "../components/ink/BoilFilters.astro";
 import Header from "../components/Header.astro";
 import { AUTHOR, BLOG } from "../site.mjs";
 import { graph } from "../lib/schema";
+import speculationrules from "../../public/speculationrules.json";
 interface Props {
   title: string;
   description?: string;
@@ -30,6 +31,7 @@ const card = new URL(image.src, Astro.site);
 // the same page as Markdown, for agents (written by src/integrations/agents.mjs, served on Accept: text/markdown)
 const markdown = `${Astro.url.pathname.replace(/\/?$/, "/")}index.md`;
 const ld = JSON.stringify(graph(schema)).replace(/</g, "\\u003c");
+const speculationRules = JSON.stringify(speculationrules);
 ---
 <!doctype html>
 <html lang="en-GB">
@@ -62,6 +64,7 @@ const ld = JSON.stringify(graph(schema)).replace(/</g, "\\u003c");
 <meta property="og:image:alt" content={image.alt}>
 <meta name="twitter:card" content="summary_large_image">
 <script type="application/ld+json" set:html={ld} />
+<script type="speculationrules" set:html={speculationRules} />
 <slot name="head" />
 <script is:inline>
 // before first paint: re-apply a theme the switch pinned, so there is no flash

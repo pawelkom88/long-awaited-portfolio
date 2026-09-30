@@ -1,6 +1,6 @@
 // Structured data (schema.org JSON-LD): who wrote the site, and what each page is.
 // The person and the site have stable @ids; Base adds both to every page, which adds its own nodes.
-import { SITE_URL, AUTHOR, ROLE, PLACE, PROFILES, BLOG } from "../site.mjs";
+import { SITE_URL, AUTHOR, EMAIL, ROLE, PLACE, PROFILES, BLOG } from "../site.mjs";
 
 const at = (path: string) => new URL(path, SITE_URL).href;
 const PERSON = at("/#person");
@@ -13,6 +13,7 @@ const person = {
   url: at("/"),
   jobTitle: ROLE,
   image: at("/icon-512.png"),
+  email: "mailto:" + EMAIL,
   address: { "@type": "PostalAddress", addressLocality: PLACE.locality, addressCountry: PLACE.country },
   ...(PROFILES.length && { sameAs: PROFILES }),
 };

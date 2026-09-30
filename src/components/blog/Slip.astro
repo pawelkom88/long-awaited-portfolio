@@ -5,7 +5,7 @@ interface Props { href: string; title: string; date: Date; dateText: string; des
 const { href, title, date, dateText, description } = Astro.props;
 ---
 <li class="slip">
-  <span class="peg"><Ink name="peg" /></span>
+  <span class="peg" aria-hidden="true"><Ink name="peg" /></span>
   <article class="paper">
     <h2><a href={href}><span class="t">{title}</span></a></h2>
     <p class="typed when"><time datetime={date.toISOString().slice(0, 10)}>{dateText}</time></p>

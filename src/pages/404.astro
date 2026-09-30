@@ -2,7 +2,7 @@
 import Base from "../layouts/Base.astro";
 import { ink } from "../lib/ink";
 ---
-<Base title="Not here · Pawel Komorkiewicz" description="This page isn't in the drawer. It may have moved, or it never existed." noindex>
+<Base title="404: Page not found · Pawel Komorkiewicz" description="This page isn't in the drawer. It may have moved, or it never existed." noindex>
 <main id="main" tabindex="-1">
   <section class="lost" id="top-of-page" aria-labelledby="lost-h">
     <h1 id="lost-h">This page isn't in the drawer.</h1>
@@ -27,8 +27,8 @@ import { ink } from "../lib/ink";
 <style>
 .lost { min-height: 80vh; }
 .stage-lost { aspect-ratio: 2520 / 720; max-width: 58rem; }
-.stage-lost .note-lost { left: 76%; top: 30%; opacity: 0; transition: opacity .4s; }
-.stage-lost.found-nothing .note-lost { opacity: 1; }
+.stage-lost .note-lost { left: 76%; top: 30%; opacity: 0; visibility: hidden; transition: opacity .4s, visibility .4s; }
+.stage-lost.found-nothing .note-lost { opacity: 1; visibility: visible; }
 .note-lost .arrow { position: absolute; right: 100%; top: .5em; width: 4rem; margin-right: .4rem; transform: scale(-1, 1) rotate(-12deg); }
 .home { margin-top: 3rem; }
 .home a { text-decoration: underline; text-underline-offset: 3px; }

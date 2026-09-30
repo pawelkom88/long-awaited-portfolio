@@ -1,7 +1,7 @@
 # auth.md: Pawel Komorkiewicz Portfolio Agent Access & Registration
 
 ## Overview
-This document specifies authentication, authorization, and discovery protocols for AI agents, crawlers, and automated clients interacting with the portfolio and blog of Pawel Komorkiewicz at `https://myknots.netlify.app`.
+This document specifies authentication, authorization, and discovery protocols for AI agents, crawlers, and automated clients interacting with the portfolio and blog of Pawel Komorkiewicz at `https://pavv.dev`.
 
 ## Audience
 Autonomous AI agents, search crawlers, LLM retrieval pipelines, and interactive agent tools.
@@ -18,8 +18,8 @@ All portfolio pages, case studies, blog posts, ink illustrations, and metadata a
 For extended API interactions, programmatic agent identity, or rate-limit allowances:
 - **OAuth Authorization Server**: `/.well-known/oauth-authorization-server`
 - **Protected Resource Metadata (RFC 9728)**: `/.well-known/oauth-protected-resource`
-- **Registration Endpoint**: `https://myknots.netlify.app/agent/register`
-- **Claim Endpoint**: `https://myknots.netlify.app/agent/claim`
+- **Registration Endpoint**: `https://pavv.dev/agent/register`
+- **Claim Endpoint**: `https://pavv.dev/agent/claim`
 
 ### Supported Identity Types
 1. **Anonymous (`anonymous`)**:

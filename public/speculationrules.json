@@ -1,0 +1,35 @@
+{
+  "prefetch": [
+    {
+      "source": "document",
+      "where": {
+        "href_matches": "/*"
+      },
+      "eagerness": "moderate"
+    }
+  ],
+  "prerender": [
+    {
+      "source": "document",
+      "where": {
+        "or": [
+          { "href_matches": "/blog" },
+          { "href_matches": "/blog/*" }
+        ]
+      },
+      "eagerness": "moderate"
+    },
+    {
+      "source": "document",
+      "where": {
+        "or": [
+          { "href_matches": "/" },
+          { "href_matches": "/projects" },
+          { "href_matches": "/projects/" },
+          { "href_matches": "/projects/*" }
+        ]
+      },
+      "eagerness": "conservative"
+    }
+  ]
+}

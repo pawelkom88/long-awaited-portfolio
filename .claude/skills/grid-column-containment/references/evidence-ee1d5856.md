@@ -1,1 +1,0 @@
-sed -i '' 's/min-height: var(--pin-h); display: grid; align-content: center; }/min-height: var(--pin-h); display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; }/'

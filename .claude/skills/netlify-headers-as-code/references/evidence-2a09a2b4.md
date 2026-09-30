@@ -1,1 +1,0 @@
-⬥ Loaded edge function markdown\ncontent-security-policy: default-src 'self'; script-src 'self' 'sha256-5fI1Tw/1K6+h6XMbR5Rvxt2G1H+qBMjfy2VPD0whsjM='\nX-Frame-Options: DENY\nX-Content-Type-Options: nosniff\nReferrer-Policy: strict-origin-when-cross-origin

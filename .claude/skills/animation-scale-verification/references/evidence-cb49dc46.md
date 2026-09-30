@@ -1,1 +1,0 @@
-1440 900 {\"header\":79,\"lede\":344,\"stageTop\":518,\"stageBot\":829,\"hero\":899,\"kite\":1110,\"seated\":518,\"waving\":368,\"pulling\":408,\"dozing\":508}\n390 844 {\"header\":79,\"lede\":362,\"stageTop\":466,\"stageBot\":630,\"hero\":630,\"kite\":766,\"seated\":466,\"waving\":386,\"pulling\":408,\"dozing\":461}

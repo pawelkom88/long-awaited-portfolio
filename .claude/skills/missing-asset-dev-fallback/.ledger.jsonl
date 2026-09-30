@@ -1,1 +1,0 @@
-{"action": "create", "reason": "Pattern for handling incomplete assets during development without blocking the build or losing visibility of what's still needed.", "evidence": "references/evidence-3fd632f0.md"}

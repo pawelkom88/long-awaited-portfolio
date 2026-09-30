@@ -49,6 +49,11 @@ h3 { font-weight: 400; font-size: 1.15rem; margin: 0; }
 /* measured: the text plus a stage a third of the width tall, capped where the stage stops growing */
 .magic { --pin-h: min(100vh, 11.5rem + min(100vw - 2 * var(--gutter), 76rem - 2 * var(--gutter)) * 1.12 * 1120 / 2520); --steps: 170vh; }
 .note-nojs { left: 27%; bottom: -2.7rem; }
+/* no scroll timelines: the same pin, with the frames picked by the scroll in story.js */
+@media (prefers-reduced-motion: no-preference) and (width > 48rem) {
+  .magic.js-lift { height: calc(var(--pin-h) + var(--steps)); }
+  .magic.js-lift .pin { position: sticky; top: calc(50vh - var(--pin-h) / 2); min-height: var(--pin-h); display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; }
+}
 
 /* ---------- what I hold on to ---------- */
 .care { margin-top: var(--section-gap); }

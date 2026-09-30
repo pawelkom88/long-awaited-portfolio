@@ -54,19 +54,50 @@ if (!scrolled || still) {
   const magic = document.getElementById("magic");
   if (magic) {
     const kite = [...magic.querySelectorAll(".ink")];
-    const lift = () => {
-      if (magic.classList.contains("lifted")) return;
-      magic.classList.add("lifted");
-      if (still) { kite.forEach((k, i) => k.classList.toggle("on", i === kite.length - 1)); return; }
-      kite.forEach((_, i) => setTimeout(() => kite.forEach((o, j) => o.classList.toggle("on", j === i)), i * 700));
-    };
-    const observeMagic = () => {
-      new IntersectionObserver(([e], io) => { if (e.isIntersecting) { setTimeout(lift, 600); io.disconnect(); } }, { threshold: .8 }).observe(magic);
-    };
-    if (document.prerendering) {
-      document.addEventListener("prerenderingchange", observeMagic, { once: true });
+    const section = document.getElementById("lift");
+    if (!still && section) {
+      // no scroll timelines (Firefox): the same pin in CSS, and the scroll picks the frame by hand
+      section.classList.add("js-lift");
+      const pin = section.querySelector(".pin");
+      const pinned = matchMedia("(width > 48rem)");
+      let queued = false;
+      const progress = () => {
+        if (pinned.matches) {
+          // the frames run while the pin holds: from the section top reaching the pin's top line
+          // until the section bottom reaches its bottom line
+          const hold = section.offsetHeight - pin.offsetHeight;
+          return hold > 0 ? (parseFloat(getComputedStyle(pin).top) - section.getBoundingClientRect().top) / hold : 1;
+        }
+        // phones: as the stage rises up the screen, like `contain 0% contain 55%`
+        const r = magic.getBoundingClientRect(), room = innerHeight - r.height;
+        return room > 0 ? (innerHeight - r.bottom) / room / .55 : 1;
+      };
+      const frame = () => {
+        queued = false;
+        const p = progress();
+        const on = p < .28 ? 0 : p < .58 ? 1 : 2;
+        kite.forEach((k, i) => k.classList.toggle("on", i === on));
+        magic.classList.toggle("lifted", p >= .76);
+      };
+      const queue = () => { if (!queued) { queued = true; requestAnimationFrame(frame); } };
+      addEventListener("scroll", queue, { passive: true });
+      addEventListener("resize", queue);
+      frame();
     } else {
-      observeMagic();
+      const lift = () => {
+        if (magic.classList.contains("lifted")) return;
+        magic.classList.add("lifted");
+        if (still) { kite.forEach((k, i) => k.classList.toggle("on", i === kite.length - 1)); return; }
+        kite.forEach((_, i) => setTimeout(() => kite.forEach((o, j) => o.classList.toggle("on", j === i)), i * 700));
+      };
+      const observeMagic = () => {
+        new IntersectionObserver(([e], io) => { if (e.isIntersecting) { setTimeout(lift, 600); io.disconnect(); } }, { threshold: .8 }).observe(magic);
+      };
+      if (document.prerendering) {
+        document.addEventListener("prerenderingchange", observeMagic, { once: true });
+      } else {
+        observeMagic();
+      }
     }
   }
 }

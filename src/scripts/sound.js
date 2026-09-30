@@ -1,5 +1,5 @@
-// A music box you can wind up. Off until asked; the choice is remembered, but the browser
-// still needs a gesture before anything plays, so a remembered "on" waits for the first click or key.
+// A music box you can wind up. Off until asked; the choice is remembered. Wound up in this visit,
+// it keeps playing onto the next page (browsers that want a fresh gesture get it from the first tap).
 // Everything is synthesised: a plucked comb tune (brighter by day, a slower lullaby at night),
 // a tick for the pull cord and a papery scrub for the rubber.
 const root = document.documentElement;
@@ -126,13 +126,25 @@ const set = (value, { remember = true } = {}) => {
   btn.setAttribute("aria-pressed", on);
   if (remember) {
     try {
-      if (on) localStorage.setItem("sound", "on");
-      else localStorage.removeItem("sound");
+      if (on) {
+        localStorage.setItem("sound", "on");
+        sessionStorage.setItem("sound", "playing"); // this visit: carry the tune across pages
+      } else {
+        localStorage.removeItem("sound");
+        sessionStorage.removeItem("sound");
+      }
     } catch {}
   }
 };
 
 btn.addEventListener("click", () => {
+  if (on && (!ctx || ctx.state !== "running")) {
+    btn.classList.remove("jiggle");
+    void btn.offsetWidth;
+    btn.classList.add("jiggle");
+    start();
+    return;
+  }
   set(!on);
   btn.classList.remove("jiggle");
   void btn.offsetWidth;
@@ -141,19 +153,23 @@ btn.addEventListener("click", () => {
   start();
 });
 
-// remembered "on": show it, and start on the first gesture anywhere
-let remembered = false;
-try { remembered = localStorage.getItem("sound") === "on"; } catch {}
+// remembered "on": show it. If it was playing a page ago, play on; where the browser holds
+// audio back for a gesture, the first tap anywhere resumes it. Keystrokes never do, so the
+// tune cannot start over a screen reader.
+let remembered = false, playing = false;
+try {
+  remembered = localStorage.getItem("sound") === "on";
+  playing = sessionStorage.getItem("sound") === "playing";
+} catch {}
 if (remembered) {
   set(true, { remember: false });
-  const wake = e => {
-    if (e.target.closest?.("#sound")) return; // that click toggles it instead
-    removeEventListener("pointerdown", wake, true);
-    removeEventListener("keydown", wake, true);
-    if (on) start();
-  };
-  addEventListener("pointerdown", wake, true);
-  addEventListener("keydown", wake, true);
+  if (playing) {
+    start();
+    const wake = e => {
+      if (on && ctx?.state !== "running" && !btn.contains(e.target)) start();
+    };
+    addEventListener("pointerdown", wake, { once: true, capture: true });
+  }
 }
 
 // quiet while the tab is away
@@ -164,4 +180,6 @@ document.addEventListener("visibilitychange", () => {
 });
 
 document.addEventListener("ink:tug", () => on && ctx?.state === "running" && tick());
+// the shelf string, plucked: one low tine under whatever the box is playing
+document.addEventListener("ink:pluck", () => on && ctx?.state === "running" && pluck(hz((night() ? NIGHT : DAY).base - 12), ctx.currentTime, 1));
 document.addEventListener("ink:rub", e => on && ctx?.state === "running" && scrub(e.detail.duration, e.detail.rows));

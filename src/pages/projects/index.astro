@@ -1,0 +1,45 @@
+---
+// Projects, not ready yet: the figure beside something under a cloth. Point at it and a corner lifts.
+import Base from "../../layouts/Base.astro";
+import { ink } from "../../lib/ink";
+import { AUTHOR, EMAIL } from "../../site.mjs";
+import { page } from "../../lib/schema";
+const description = `Projects by ${AUTHOR}, front end developer in Newport, Wales. Something's on the bench now: come back when the ink's dry.`;
+---
+<Base title={`Projects · ${AUTHOR}`} description={description} schema={page("Projects", "/projects/", description)} inProjects>
+<main id="main" tabindex="-1">
+  <section class="bench" id="top-of-page" aria-labelledby="bench-h">
+    <h1 id="bench-h">Something's on the bench.</h1>
+    <p class="soft">I'm building it now. Come back when the ink's dry.</p>
+
+    <div class="stage stage-bench">
+      <div class="boil bench-scene" role="img" tabindex="0" aria-label="The figure stands with a hand on something hidden under a cloth">
+        <span class="ink pose" style={`--src:url(${ink("bench")}); --ar:2490/720; top:0`}></span>
+        <span class="ink pose bench-lift" style={`--src:url(${ink("bench-lift")}); --ar:2490/720; top:0`}></span>
+      </div>
+      <p class="note bench-note" aria-hidden="true"><span class="ink arrow" style={`--src:url(${ink("pencil/arrow")}); --ar:199/112`}></span>no peeking</p>
+    </div>
+
+    <p class="bench-early"><a href={`mailto:${EMAIL}`}>want a look early? say hello</a></p>
+  </section>
+</main>
+</Base>
+
+<style>
+.bench { min-height: 80vh; }
+.stage-bench { aspect-ratio: 2490 / 720; max-width: 58rem; }
+.bench-scene { outline-offset: .5rem; }
+/* the lifted corner rests hidden; the cloth still hangs all round */
+.bench-lift { opacity: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .bench-scene:is(:hover, :focus-visible) .bench-lift { opacity: 1; }
+}
+/* pencil, above the cloth: the arrow leans down on to its top */
+.stage-bench .bench-note { left: 51%; top: 12%; }
+.bench-note .arrow { position: absolute; right: 100%; top: .6em; width: 4rem; margin-right: .3rem; transform: scale(-1, -1) rotate(-20deg); }
+.bench-early { margin-top: 3rem; }
+.bench-early a { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 40rem) {
+  .bench-note .arrow { width: 2.6rem; }
+}
+</style>

@@ -2,15 +2,16 @@
 // A picture on a sheet, held down at one corner (tape, or a paperclip), captioned in pencil.
 //   <Figure src={shot} alt="…">caption, optional</Figure>
 // The image is optimised by astro:assets: AVIF and WebP, sized for the column.
+// Lazy by default; `priority` only for a picture in the first screen (loaded eagerly, fetchpriority="high").
 import type { ImageMetadata } from "astro";
 import { Picture } from "astro:assets";
 import Ink from "../ink/Ink.astro";
-interface Props { src: ImageMetadata; alt: string; hold?: "tape" | "clip" }
-const { src, alt, hold = "tape" } = Astro.props;
+interface Props { src: ImageMetadata; alt: string; hold?: "tape" | "clip"; priority?: boolean }
+const { src, alt, hold = "tape", priority = false } = Astro.props;
 ---
 <figure class:list={["figure", `hold-${hold}`]}>
   {hold === "clip" ? <Ink name="paperclip" class="clip" aria-hidden="true" /> : <span class="tape" aria-hidden="true"></span>}
-  <Picture src={src} alt={alt} formats={["avif", "webp"]} widths={[480, 720, 960, 1340, 2000]} sizes="(min-width: 44rem) 42rem, calc(100vw - 2rem)" />
+  <Picture src={src} alt={alt} formats={["avif", "webp"]} priority={priority} widths={[480, 720, 960, 1340, 2000]} sizes="(min-width: 44rem) 42rem, calc(100vw - 2rem)" />
   {Astro.slots.has("default") && <figcaption><slot /></figcaption>}
 </figure>
 

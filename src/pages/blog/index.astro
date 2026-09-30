@@ -5,12 +5,13 @@ import "../../styles/blog.css";
 import WashingLine from "../../components/blog/WashingLine.astro";
 import Slip from "../../components/blog/Slip.astro";
 import { posts, typedDate } from "../../lib/posts";
-import { BLOG } from "../../site.mjs";
+import { AUTHOR, BLOG } from "../../site.mjs";
+import { blog } from "../../lib/schema";
 const all = await posts();
+const schema = blog(all.map(p => ({ title: p.data.title, path: `/blog/${p.id}/`, date: p.data.date })));
 ---
-<Base title={BLOG.name} description={BLOG.description} inBlog>
-  <link slot="head" rel="alternate" type="application/rss+xml" title={BLOG.name} href="/blog/feed.xml">
-  <main>
+<Base title={`${BLOG.name}: notes on front end work · ${AUTHOR}`} description={BLOG.description} schema={schema} inBlog>
+  <main id="main" tabindex="-1">
     <section class="blog-head" id="top-of-page" aria-labelledby="blog-h">
       <h1 id="blog-h">{BLOG.name}</h1>
       <p class="soft lede">Thoughts I've tied off and hung up to dry. Mostly front end, now and then people.</p>

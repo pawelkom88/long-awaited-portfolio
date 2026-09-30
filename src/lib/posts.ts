@@ -12,8 +12,9 @@ export const typedDate = (d: Date) =>
   d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
 
 // "a 6 minute read", at 220 words a minute, counting prose and code alike
+export const wordCount = (body = "") => body.replace(/<[^>]+>|import .+ from .+;?/g, " ").split(/\s+/).filter(Boolean).length;
+
 export function readingTime(body = ""): string {
-  const words = body.replace(/<[^>]+>|import .+ from .+;?/g, " ").split(/\s+/).filter(Boolean).length;
-  const n = Math.max(1, Math.round(words / 220));
+  const n = Math.max(1, Math.round(wordCount(body) / 220));
   return `${/^(8|11|18)/.test(String(n)) ? "an" : "a"} ${n} minute read`;
 }

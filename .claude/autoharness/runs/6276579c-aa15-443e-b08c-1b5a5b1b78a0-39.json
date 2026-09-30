@@ -1,0 +1,26 @@
+{
+  "run_id": "6276579c-aa15-443e-b08c-1b5a5b1b78a0-39",
+  "verdicts": [
+    {
+      "action": "create",
+      "name": "stagger-animation-delays",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "force-css-animation-restart",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "custom-event-animation-coordination",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "run_id": "29313a3c-8a80-4932-ae2b-a0c80589b518-77",
+  "verdicts": [
+    {
+      "action": "patch",
+      "name": "astro-image-optimization",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "netlify-headers-as-code",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "netlify-edge-markdown-negotiation",
+      "ok": false,
+      "findings": [
+        "safety"
+      ],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "astro-blog-jsonld-schema",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "astro-netlify-siteurl-env",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    }
+  ]
+}

@@ -15,7 +15,9 @@ npm run check     # types and templates
 
 ```
 src/
-  site.mjs                 the site's shared facts: URL, author, email, blog name
+  site.mjs                 the site's shared facts: URL (SITE_URL, else Netlify's URL), author, email, blog name
+  lib/schema.ts            the JSON-LD every page carries (Base adds the site and the author)
+  integrations/agents.mjs  after the build: index.md per page, llms.txt, ai-catalog.json, _headers (CSP and all)
   pages/                   / (the story), /404, /blog/, /blog/<slug>/, /blog/feed.xml
   layouts/Base.astro       every page: theme bootstrap, header, tune and switch
   components/
@@ -29,7 +31,8 @@ src/
   assets/ink/              the drawings (SVG, fill="currentColor", used as masks)
   assets/pencil/           the pencil marks (WebP masks)
   assets/paper/            grain, specks, the ink-wash edges, the rub sprite
-design/ink/                the art pipeline (not shipped): raw sketches, generators, tools
+design/ink/                the art pipeline (not shipped): raw sketches, generators, tools (tools/og.mjs: the share card and icons)
+netlify/edge-functions/    markdown.ts: Accept: text/markdown gets the page as Markdown
 docs/                      the briefs the site was built from
 ```
 

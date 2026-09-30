@@ -1,0 +1,1 @@
+{"action": "create", "reason": "Portfolio build demonstrated that centralizing JSON-LD schema generation in a lib and importing it into Base layout ensures every page carries consistent structured data (site, author, page-specific schema) without repetition.", "evidence": "references/evidence-267a040f.md"}

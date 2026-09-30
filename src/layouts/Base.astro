@@ -4,26 +4,64 @@ import "../styles/ink.css";
 import "../styles/rub.css";
 import BoilFilters from "../components/ink/BoilFilters.astro";
 import Header from "../components/Header.astro";
+import { AUTHOR, BLOG } from "../site.mjs";
+import { graph } from "../lib/schema";
 interface Props {
   title: string;
   description?: string;
+  // the share card: a path under the site, 1200x630 (the default is the kite)
+  image?: { src: string; alt: string };
+  type?: "website" | "article" | "profile";
+  // kept out of search (the 404): no canonical, no sitemap entry
+  noindex?: boolean;
+  // this page's own schema.org nodes (src/lib/schema.ts); the site and its author are always added
+  schema?: object[];
   home?: boolean;
   inBlog?: boolean;
+  inProjects?: boolean;
   bodyId?: string;
 }
-const { title, description, home, inBlog, bodyId } = Astro.props;
+const {
+  title, description, noindex, schema, home, inBlog, inProjects, bodyId, type = "website",
+  image = { src: "/og.png", alt: `${AUTHOR}: a small ink figure at a laptop, flying a kite on a long string` },
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const card = new URL(image.src, Astro.site);
+// the same page as Markdown, for agents (written by src/integrations/agents.mjs, served on Accept: text/markdown)
+const markdown = `${Astro.url.pathname.replace(/\/?$/, "/")}index.md`;
+const ld = JSON.stringify(graph(schema)).replace(/</g, "\\u003c");
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title}</title>
 {description && <meta name="description" content={description}>}
+<meta name="author" content={AUTHOR}>
+{noindex ? <meta name="robots" content="noindex"> : <link rel="canonical" href={canonical}>}
 <meta name="color-scheme" content="light dark">
-<link rel="canonical" href={canonical}>
+<meta name="theme-color" content="#e8e4dc" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1e2430" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="alternate" type="application/rss+xml" title={BLOG.name} href="/blog/feed.xml">
+{!noindex && <link rel="alternate" type="text/markdown" href={markdown}>}
+<meta property="og:type" content={type}>
+<meta property="og:site_name" content={AUTHOR}>
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content={title}>
+{description && <meta property="og:description" content={description}>}
+{!noindex && <meta property="og:url" content={canonical}>}
+<meta property="og:image" content={card}>
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content={image.alt}>
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json" set:html={ld} />
 <slot name="head" />
 <script is:inline>
 // before first paint: re-apply a theme the switch pinned, so there is no flash
@@ -39,12 +77,14 @@ try {
 <link rel="expect" href="#top-of-page" blocking="render">
 </head>
 <body id={bodyId}>
+<a href="#main" class="skip-link">Skip to main content</a>
 <BoilFilters />
-<Header home={home} inBlog={inBlog} />
+<Header home={home} inBlog={inBlog} inProjects={inProjects} />
 <slot />
 <script>
   import "../scripts/theme.js";
   import "../scripts/sound.js";
+  import "../scripts/webmcp.js";
 </script>
 </body>
 </html>

@@ -13,47 +13,51 @@ import { ink } from "../../lib/ink";
     </header>
 
     <div class="entry">
-      <span class="ink knot" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
+      <span class="ink knot" aria-hidden="true" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
       <p class="when">May 2021 &rarr; now</p>
       <h3 class="typed">Volunteer Web Developer &middot; Polish School Bristol</h3>
-      <p class="typed body">Look after the digital home of a <span class="m m-under">community school<span class="ink" style={`--src:url(${ink("pencil/underline")})`}></span></span>. It's where I learned that every interface has a person waiting on the other side.</p>
+      <p class="typed body">Look after the digital home of a <span class="m m-under">community school<span class="ink" aria-hidden="true" style={`--src:url(${ink("pencil/underline")})`}></span></span>. It's where I learned that every interface has a person waiting on the other side.</p>
       <p class="margin hand">Before anyone paid me, someone trusted me.</p>
     </div>
 
     <div class="entry">
-      <span class="ink knot" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
+      <span class="ink knot" aria-hidden="true" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
       <p class="when">Jun 2023 &rarr; Sep 2024</p>
       <h3 class="typed">Frontend Developer &middot; VenueNow &mdash; ParkBunny</h3>
-      <p class="typed body"><span class="m m-strike">Implemented features.<span class="ink" style={`--src:url(${ink("pencil/strike")})`}></span></span> Designed and built the ParkBunny operator platform <span class="m m-circle">from nothing<span class="ink" style={`--src:url(${ink("pencil/circle")})`}></span></span>: architecture, interface and patterns. Car park owners use it to shape their sites, set opening hours and tariffs, and read the story in their transactions. No legacy, no template, just the first lines of something that had to hold weight.</p>
-      <p class="margin hand">An empty page, and permission to draw the map.</p>
+      <p class="typed body"><del class="m m-strike"><span class="sr-only">Correction: strikethrough </span>Implemented features.<span class="ink" aria-hidden="true" style={`--src:url(${ink("pencil/strike")})`}></span></del> Owned the frontend of the ParkBunny operator platform: architecture, UI patterns and <span class="m m-circle">role-based access<span class="ink" aria-hidden="true" style={`--src:url(${ink("pencil/circle")})`}></span></span>. Dashboards, charts, filtering and tariff management.</p>
+      <p class="typed tools">tools: React 18 &middot; TypeScript</p>
+      <p class="margin hand">Where I learned to ask why before how.</p>
     </div>
 
     <div class="entry">
-      <span class="ink knot" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
+      <span class="ink knot" aria-hidden="true" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
       <p class="when">Sep 2024 &rarr; Apr 2025</p>
       <h3 class="typed">Frontend Developer &middot; OLM Systems, now Civica ECLIPSE</h3>
-      <p class="typed body">Worked on a case management platform that social workers and carers rely on <span class="m m-circle">every day<span class="ink" style={`--src:url(${ink("pencil/circle")})`}></span></span>. It's a big, long-lived codebase spread across several projects, where legacy and new code share the same rooms. I learned how to change something without breaking the quiet trust people put in it. React, GraphQL, and a lot of careful reading.</p>
-      <p class="margin hand">Somewhere, a social worker opens this screen. It has to be there for them.</p>
+      <p class="typed body">Frontend on a case management platform for social care, spread across several repos and microservices. <span class="m m-circle">Legacy refactoring<span class="ink" aria-hidden="true" style={`--src:url(${ink("pencil/circle")})`}></span></span>, testing, and real-time data over WebSockets.</p>
+      <p class="typed tools">tools: React 18 &middot; GraphQL &middot; Formik &middot; MUI &middot; Storybook</p>
+      <p class="margin hand">Reading code is most of the job.</p>
     </div>
 
     <div class="entry">
-      <span class="ink knot" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
+      <span class="ink knot" aria-hidden="true" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
       <p class="when">Apr 2025 &rarr; Jan 2026</p>
-      <h3 class="typed">Frontend Developer &middot; shaka</h3>
-      <p class="typed body">Designed the architecture for a family of platforms grown from <span class="m m-under">one core<span class="ink" style={`--src:url(${ink("pencil/underline")})`}></span></span>: a shared monorepo, a common design system, and the same foundations underneath. Starting a new platform stopped being a project and became a beginning. Next.js, Tailwind, and a lot of thinking about what should be shared and what should be free.</p>
-      <p class="margin hand">Build the root once, and every new branch already knows how to grow.</p>
+      <h3 class="typed">Frontend Developer &middot; Shaka</h3>
+      <p class="typed body">Frontend architecture for a family of white-label eSIM platforms: a monorepo and a <span class="m m-under">shared design system<span class="ink" aria-hidden="true" style={`--src:url(${ink("pencil/underline")})`}></span></span>. Stripe payments, auth and account flows.</p>
+      <p class="typed tools">tools: Next.js 15 &middot; TypeScript &middot; Tailwind &middot; Stripe</p>
+      <p class="margin hand">Half the job is deciding what not to share.</p>
     </div>
 
     <div class="entry">
-      <span class="ink knot" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
+      <span class="ink knot" aria-hidden="true" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
       <p class="when">Jan 2026 &rarr; now</p>
       <h3 class="typed">Front End Developer &middot; Novira Technologies</h3>
-      <p class="typed body">Built interfaces for a circular-packaging platform. There's an operations dashboard, plus kiosks and smart bins where people return reusable containers and get their deposit back. It runs on a modern stack from the ground up: React 19 and its newest features, live payment state over WebSockets, and flows that adapt to each venue. Fast, well tested, and gentle to use: <span class="m m-tick">every scan gets an answer.<span class="ink" style={`--src:url(${ink("pencil/tick")}); --ar:1/1`}></span></span></p>
-      <p class="margin hand">Code that meets people in the real world: a bin, a kiosk, a small thank-you on the screen.</p>
+      <p class="typed body">Frontend for a circular-packaging platform: an operations dashboard, kiosks and smart bins. Role-based views, interfaces for hardware, and <span class="m m-tick">testing.<span class="ink" aria-hidden="true" style={`--src:url(${ink("pencil/tick")}); --ar:1/1`}></span></span></p>
+      <p class="typed tools">tools: React 19 &middot; React Compiler &middot; TypeScript &middot; WebSockets &middot; Stripe</p>
+      <p class="margin hand">First UI I've had to wipe clean.</p>
     </div>
 
     <div class="entry entry-next">
-      <span class="ink knot" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
+      <span class="ink knot" aria-hidden="true" style={`--src:url(${ink("knot-1")}); --ar:580/200`}></span>
       <p class="when">soon</p>
       <h3 class="hand">Front End Developer &middot; HID Global</h3>
       <p class="hand body">Starting soon at HID, the people behind the quiet technology that decides which doors open and who is really there. Identity, trust and security, at a scale most people never notice. I'm very excited to see what's past the edge of this page.<span class="cursor" aria-hidden="true"></span></p>

@@ -1,0 +1,117 @@
+---
+// Knots I untied: four cases. Each drawing starts as a snarl and settles into the knot it was solved with.
+import Ink from "../ink/Ink.astro";
+
+const cases = [
+  {
+    id: "parkbunny", name: "ParkBunny", years: "2023–24", knot: "bowline", art: "knot-bowline",
+    problem: "A startup with no designs, no backend plan, and no AI to test ideas on cheaply. Four kinds of people needed one platform: an admin who sees everything, client managers, clients and car park managers, each allowed a different corner of it.",
+    pull: "I drew the map before the rooms. Roles first: who sees what, and why, agreed with the people who'd use it. Then one set of patterns every screen could lean on: filters, date pickers, and charts for money in and how busy each car park was.",
+    end: "One platform, four ways in, nothing leaking between them. It's still growing, and operators still change their tariffs on it in real time.",
+    margin: "No design? Then the conversation is the design.",
+  },
+  {
+    id: "olm", name: "OLM Systems", years: "2024–25", knot: "reef knot", art: "knot-reef",
+    problem: "A care platform over many repos and microservices: React 17, Formik, a Storybook design system on MUI, GraphQL on top. <code>useMemo</code> everywhere, effects doing jobs they were never meant for, tests in Enzyme. Hard to tell what any line was for.",
+    pull: "Read first, change second. I traced the logic before touching it, and left each file a little easier to follow. One feature: report downloads. The server sent them over a WebSocket in chunks; I kept the line open, caught every piece, and stitched them into one CSV people could trust.",
+    end: "Reports that arrive whole, on a screen a social worker opens every day.",
+    margin: "A granny knot looks right until you pull it. Tie it again, properly.",
+  },
+  {
+    id: "shaka", name: "Shaka", years: "2025–26", knot: "sheet bend", art: "knot-sheet-bend",
+    problem: "A startup selling eSIMs under other people's names: Deliveroo riders, Olilo, and a football fan network with a famous voice. Every partner wanted its own platform, in its own colours, yesterday.",
+    pull: "Build the root once. A monorepo with shared auth, shared components and shared CSS, and a thin layer of brand on top. Onboarding through Stripe Checkout, and a dashboard to change plans, buy roaming, cancel and come back.",
+    end: "Each new platform was quicker than the last, and one is open to every Deliveroo rider in the UK.",
+    links: ["https://rideresim.com/", "https://mobile.olilo.co.uk/", "https://rocketmobile.co.uk/"],
+    margin: "Different ropes, one knot to hold them.",
+  },
+  {
+    id: "novira", name: "Novira", years: "2026", knot: "figure eight", art: "knot-figure-eight",
+    problem: "Reusable containers only work if handing one back is easier than binning it. That meant three interfaces: a dashboard for the people running it, a kiosk that hands out and takes deposits, and a smart bin that has to answer every scan, straight away.",
+    pull: "Three screens, one voice. The dashboard: React 19 and the React Compiler, each role its own view, so a venue sees its venue and the warehouse sees its stock. The kiosk: Stripe deposits with live payment state over WebSockets. The bin: a scan, a small animated thank-you, and ready for the next one before the last has finished.",
+    end: "Novira's partners, from canteens to shop floors, run reuse on it every day.",
+    margin: "The best answer from a bin is a quick one.",
+  },
+];
+const host = (url: string) => new URL(url).hostname.replace(/^www\./, "");
+---
+<section class="knots" aria-labelledby="knots-h">
+  <h2 id="knots-h">Knots I untied</h2>
+  <p class="soft">Four that took some pulling. Each one started as a snarl and ended as a knot with a name.</p>
+  <ol class="kc-list" role="list">
+    {cases.map(c => (
+      <li>
+        <article class="kc-case" aria-labelledby={`kc-${c.id}`}>
+          <div class="kc-art" aria-hidden="true">
+            <Ink name="knot-snarl" class="kc-snarl" />
+            <Ink name={c.art} class="kc-tied" />
+          </div>
+          <header class="kc-head">
+            <h3 id={`kc-${c.id}`}>{c.name}</h3>
+            <p class="kc-meta"><span class="typed">{c.years}</span> · <span class="hand">{c.knot}</span></p>
+          </header>
+          <dl class="kc-story">
+            <dt>The knot</dt><dd set:html={c.problem} />
+            <dt>The pull</dt><dd>{c.pull}</dd>
+            <dt>Loose end</dt><dd>{c.end}</dd>
+          </dl>
+          {c.links && (
+            <ul class="kc-links" role="list" aria-label={`${c.name} platforms`}>
+              {c.links.map(url => <li><a href={url}>{host(url)}</a></li>)}
+            </ul>
+          )}
+          <p class="margin hand">{c.margin}</p>
+        </article>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+.knots { margin-top: var(--section-gap); }
+.kc-list { list-style: none; padding: 0; margin: 3.5rem 0 0; display: grid; gap: 4.5rem; }
+/* knot | the story | the pencil in the margin */
+.kc-case {
+  display: grid;
+  grid-template-columns: minmax(0, 8rem) minmax(0, 1fr) minmax(0, 13rem);
+  column-gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+.kc-case > :not(.kc-art, .margin) { grid-column: 2; }
+.kc-art { grid-column: 1; grid-row: 1 / span 3; position: relative; aspect-ratio: 1; margin-top: .3rem; }
+.kc-art .ink { position: absolute; inset: 0; aspect-ratio: auto; }
+/* resting state: the knot, tied */
+.kc-snarl { opacity: 0; }
+.kc-head { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: baseline; gap: .2rem 1rem; padding: 0; font-size: inherit; color: var(--ink); }
+.kc-meta { margin: 0; font-size: .95rem; color: var(--ink-soft); }
+.kc-meta .typed { font-size: .85rem; letter-spacing: .03em; }
+.kc-story { margin: .9rem 0 0; max-width: var(--measure); }
+.kc-story dt { margin-top: .9rem; font-family: var(--typed); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); }
+.kc-story dt:first-child { margin-top: 0; }
+.kc-story dd { margin: .2rem 0 0; font-size: 1.02rem; }
+.kc-story :global(code) { font-family: var(--typed); font-size: .9em; }
+.kc-links { display: flex; flex-wrap: wrap; gap: .3rem 1.4rem; list-style: none; padding: 0; margin: 1rem 0 0; font-style: italic; color: var(--pencil); }
+.kc-links a { text-decoration: underline; text-underline-offset: 3px; }
+/* the same pencil in the margin as the CV sheet */
+.kc-case .margin { grid-column: 3; grid-row: 1 / span 3; align-self: center; margin: 0; font-size: 1.1rem; line-height: 1.35; rotate: -2deg; }
+
+/* on the way there only: the snarl crossfades into its knot as the card comes in */
+@media (prefers-reduced-motion: no-preference) {
+  @supports ((animation-timeline: view()) and (animation-range: entry)) {
+    /* the drawing's own box is the timeline, so a tall card on a phone doesn't keep it snarled: tied by mid-screen */
+    .kc-art { view-timeline: --kc; }
+    .kc-snarl { animation: kc-untie linear both; animation-timeline: --kc; animation-range: entry 100% cover 50%; }
+    .kc-tied { animation: kc-tie linear both; animation-timeline: --kc; animation-range: entry 100% cover 50%; }
+    @keyframes kc-untie { from { opacity: 1; rotate: -8deg; } 60% { opacity: .5; } to { opacity: 0; rotate: 0deg; } }
+    @keyframes kc-tie { from { opacity: 0; scale: .92; } 40% { opacity: 0; } to { opacity: 1; scale: 1; } }
+  }
+}
+
+/* phones: one column, the knot above the words */
+@media (max-width: 48rem) {
+  .kc-case { grid-template-columns: minmax(0, 1fr); }
+  .kc-case > :not(.kc-art, .margin) { grid-column: 1; }
+  .kc-art { grid-row: auto; width: 6.5rem; margin: 0 0 1.2rem; }
+  .kc-case .margin { grid-column: 1; grid-row: auto; margin-top: 1.1rem; }
+}
+</style>

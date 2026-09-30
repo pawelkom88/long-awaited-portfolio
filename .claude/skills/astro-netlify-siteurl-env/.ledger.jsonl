@@ -1,0 +1,1 @@
+{"action": "create", "reason": "Portfolio build showed that reading SITE_URL env var with fallback to Netlify's URL env, then to netlify.app domain, ensures canonical URLs and sitemaps are correct across local, preview, and production deployments without code changes.", "evidence": "references/evidence-29c33c13.md"}

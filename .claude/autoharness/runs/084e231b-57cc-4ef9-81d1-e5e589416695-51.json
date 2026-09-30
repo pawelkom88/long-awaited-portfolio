@@ -1,0 +1,19 @@
+{
+  "run_id": "084e231b-57cc-4ef9-81d1-e5e589416695-51",
+  "verdicts": [
+    {
+      "action": "patch",
+      "name": "scroll-driven-animations",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    },
+    {
+      "action": "create",
+      "name": "missing-asset-dev-fallback",
+      "ok": true,
+      "findings": [],
+      "notes": []
+    }
+  ]
+}

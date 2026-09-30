@@ -1,0 +1,1 @@
+Build output: "Knots: no \"knot-sheet-bend\" yet, standing in \"knot-bowline\"" and "Knots: no \"knot-figure-eight\" yet, standing in \"knot-reef\"". Implementation: the `drawn()` helper tries `ink(name)`, catches missing SVG, warns with the fallback name, and returns it. Comment: "Once the real art exists, the real ones are used automatically. Then delete the TEMPORARY block."

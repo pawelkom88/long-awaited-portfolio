@@ -20,7 +20,8 @@ import { ink } from "../../lib/ink";
       <span class="ink pose" id="waving" hidden style={`--src:url(${ink("figure-waving")}); --ar:2452/856; top:-48.4%`}></span>
       <span class="ink pose" id="pulling" hidden style={`--src:url(${ink("figure-pulling")}); --ar:2358/735; top:-35.4%`}></span>
     </div>
-    <button class="tangle" id="tangle" type="button" aria-label="Pull the loose end"></button>
+    <button class="tangle" id="tangle" type="button" aria-label="Pull the loose end of the string"></button>
+    <span class="sr-only" id="tangle-status" aria-live="polite"></span>
     <div class="unravel" id="unravel" aria-hidden="true"><div class="frames boil-target">
       <span class="ink on" style={`--src:url(${ink("tangle-s1")}); --ar:2048/880; top:26.9%`}></span>
       <span class="ink" style={`--src:url(${ink("tangle-s2")}); --ar:2048/880; top:23.6%`}></span>

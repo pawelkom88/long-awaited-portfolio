@@ -90,7 +90,8 @@ h3 { font-weight: 400; font-size: 1.15rem; margin: 0; }
 .entry > :not(.margin, .knot) { grid-column: 1; }
 .entry .when { margin: 0 0 .3rem; font-family: var(--typed); font-size: .85rem; color: var(--ink-soft); letter-spacing: .03em; }
 .entry .body { margin: .6rem 0 0; font-size: .98rem; line-height: 1.7; max-width: none; }
-.entry .margin { grid-column: 2; grid-row: 1 / span 3; align-self: center; margin: 0; font-size: 1.1rem; line-height: 1.35; rotate: -2deg; }
+.entry .tools { margin: .5rem 0 0; font-size: .8rem; letter-spacing: .03em; color: var(--ink-soft); }
+.entry .margin { grid-column: 2; grid-row: 1 / span 4; align-self: center; margin: 0; font-size: 1.1rem; line-height: 1.35; rotate: -2deg; }
 .entry .knot { position: absolute; left: -2.4rem; top: .25rem; width: 2.6rem; translate: -50% 0; rotate: 90deg; }
 .entry-next .body, .entry-next h3 { color: var(--pencil); }
 .entry-next .margin { align-self: end; }
@@ -103,7 +104,7 @@ h3 { font-weight: 400; font-size: 1.15rem; margin: 0; }
 .m > .ink { position: absolute; color: var(--pencil); aspect-ratio: auto; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; pointer-events: none; }
 .m-under > .ink { left: -3%; right: -3%; bottom: -.4em; height: .45em; }
 .m-strike > .ink { left: -3%; right: -3%; top: .35em; height: .55em; }
-.m-strike { color: var(--ink-soft); }
+.m-strike { color: var(--ink-soft); text-decoration: none; }
 .m-circle > .ink { inset: -.45em -.5em -.4em; }
 .m-tick { white-space: normal; }
 .m-tick > .ink { position: relative; display: inline-block; width: 1.3em; height: 1.3em; margin-left: .25em; vertical-align: -.3em; }
@@ -157,13 +158,16 @@ h3 { font-weight: 400; font-size: 1.15rem; margin: 0; }
 /* ---------- the weekend shelf, smaller now: a postscript ---------- */
 .work { margin-top: calc(var(--wash) * .18 + var(--section-gap)); }
 .work h2 .hand { margin-right: .35rem; }
+.shelf-bench { margin-top: 7rem; }
+@media (max-width: 40rem) { .shelf-bench { margin-top: 3rem; } }
+.shelf-bench a { text-decoration: underline; text-underline-offset: 3px; }
 
 /* how high the kite is: a pencil scale down the left edge */
 .altitude {
   display: none; position: fixed; z-index: 2; left: .9rem; top: 30vh; width: .7rem; height: 40vh; pointer-events: none;
   color: var(--pencil);
   background: repeating-linear-gradient(to top, currentColor 0 1px, transparent 1px 2rem) center / .45rem 100% no-repeat;
-  opacity: .55;
+  opacity: .80;
 }
 .altitude-kite { position: absolute; left: 50%; bottom: 0; width: 1.1rem; margin-left: -.55rem; overflow: visible; }
 .altitude-kite path { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }

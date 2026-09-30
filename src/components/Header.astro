@@ -1,9 +1,9 @@
 ---
-// The page header: the PK mark, the way to the notes, the tune and the bulb on its cord.
+// The page header: the PK mark, the way to the notes and the bench, the tune and the bulb on its cord.
 import Ink from "./ink/Ink.astro";
 import { AUTHOR, BLOG } from "../site.mjs";
-interface Props { home?: boolean; inBlog?: boolean }
-const { home = false, inBlog = false } = Astro.props;
+interface Props { home?: boolean; inBlog?: boolean; inProjects?: boolean }
+const { home = false, inBlog = false, inProjects = false } = Astro.props;
 ---
 <header>
   <a class="mark" href={home ? "#top" : "/"} aria-label={home ? `${AUTHOR}, back to the top` : `${AUTHOR}, the story`}>
@@ -16,8 +16,9 @@ const { home = false, inBlog = false } = Astro.props;
     <span class="mark-name">{AUTHOR}</span>
   </a>
   <a class="to-notes" href="/blog/" aria-current={inBlog ? "page" : undefined}>{BLOG.name.toLowerCase()}</a>
-  <button type="button" class="sound" id="sound" aria-label="Music" aria-pressed="false">tune<Ink name="pencil/strike" ar="320/42" class="pencil strike" /></button>
-  <button type="button" class="switch" id="theme" aria-label="Night" aria-pressed="false">
+  <a class="to-notes to-bench" href="/projects/" aria-current={inProjects ? "page" : undefined}>projects</a>
+  <button type="button" class="sound" id="sound" aria-label="Tune music" aria-pressed="false">tune<Ink name="pencil/strike" ar="320/42" class="pencil strike" aria-hidden="true" /></button>
+  <button type="button" class="switch" id="theme" aria-label="Pull cord: switch to dark theme" aria-pressed="false">
     <span class="rays pencil boil"><Ink name="bulb-rays" ar="654/661" /></span>
     <span class="bulb boil"><Ink name="bulb" ar="302/1806" /></span>
     <span class="cord"><Ink name="pull-cord" ar="158/2086" /></span>

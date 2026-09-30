@@ -1,0 +1,1 @@
+{"action": "create", "reason": "Portfolio build revealed that version-controlling Netlify headers as dist/_headers during the Astro build keeps CSP and HTTP headers reproducible and side-by-side with code.", "evidence": "references/evidence-2a09a2b4.md"}

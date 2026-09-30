@@ -1,0 +1,1 @@
+  site.mjs                 the site's shared facts: URL (SITE_URL, else Netlify's URL), author, email, blog name\n  ...\nOnce you add the custom domain in Netlify, Git and CLI builds pick it up with no code change.

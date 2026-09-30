@@ -3,7 +3,8 @@
 import Base from "../../layouts/Base.astro";
 import "../../styles/blog.css";
 import { render } from "astro:content";
-import { posts, typedDate, readingTime, type Post } from "../../lib/posts";
+import { posts, typedDate, readingTime, wordCount, type Post } from "../../lib/posts";
+import { post as schema } from "../../lib/schema";
 import { BLOG, AUTHOR } from "../../site.mjs";
 import CodeSheet from "../../components/blog/CodeSheet.astro";
 import Figure from "../../components/blog/Figure.astro";
@@ -16,25 +17,20 @@ export async function getStaticPaths() {
   return (await posts()).map(post => ({ params: { slug: post.id }, props: { post } }));
 }
 const { post } = Astro.props as { post: Post };
-const { title, description, date } = post.data;
+const { title, description, date, updated } = post.data;
 const { Content } = await render(post);
 const iso = date.toISOString().slice(0, 10);
+const path = `/blog/${post.id}/`;
 ---
-<Base title={`${title} · ${BLOG.name}`} description={description} inBlog>
+<Base title={`${title} · ${BLOG.name}`} description={description} type="article" schema={schema({ title, description, path, date, updated, image: "/og.png", words: wordCount(post.body) })} inBlog>
   <Fragment slot="head">
-    <meta property="og:type" content="article">
-    <meta property="og:title" content={title}>
-    <meta property="og:description" content={description}>
-    <meta property="og:site_name" content={BLOG.name}>
-    <meta property="og:url" content={new URL(`/blog/${post.id}/`, Astro.site)}>
     <meta property="article:published_time" content={iso}>
     <meta property="article:author" content={AUTHOR}>
-    <link rel="alternate" type="application/rss+xml" title={BLOG.name} href="/blog/feed.xml">
+    <meta property="article:section" content={BLOG.name}>
   </Fragment>
-  <main>
+  <main id="main" tabindex="-1">
     <article class="post">
       <header class="post-head" id="top-of-page">
-        <p class="kicker"><a href="/blog/">{BLOG.name}</a></p>
         <h1>{title}</h1>
         <p class="typed meta"><time datetime={iso}>{typedDate(date)}</time> &middot; {readingTime(post.body)}</p>
       </header>

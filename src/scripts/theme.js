@@ -8,7 +8,12 @@ const btn = document.getElementById("theme");
 
 const systemScheme = () => (system.matches ? "dark" : "light");
 const isDark = () => (root.dataset.theme ?? systemScheme()) === "dark";
-const sync = () => btn.setAttribute("aria-pressed", isDark());
+const sync = () => {
+  if (!btn) return;
+  const dark = isDark();
+  btn.setAttribute("aria-pressed", dark);
+  btn.setAttribute("aria-label", dark ? "Pull cord: switch to light theme" : "Pull cord: switch to dark theme");
+};
 
 const apply = scheme => {
   // matching the system means following it again, so a later OS change still counts

@@ -5,23 +5,27 @@ import "../styles/story.css";
 import Hero from "../components/story/Hero.astro";
 import Lift from "../components/story/Lift.astro";
 import Values from "../components/story/Values.astro";
+import Knots from "../components/story/Knots.astro";
 import Line from "../components/story/Line.astro";
 import Night from "../components/story/Night.astro";
 import Shelf from "../components/story/Shelf.astro";
 import Contact from "../components/story/Contact.astro";
 import { AUTHOR } from "../site.mjs";
+import { home } from "../lib/schema";
+const description = `${AUTHOR} is a front end developer in Newport, Wales, holding the line between what gets built and who it's for. Accessible, fast, hand-made web work.`;
 ---
-<Base title={`${AUTHOR}, front end developer`} description={`A conversation between code and people. ${AUTHOR}, front end developer in Newport, Wales.`} home bodyId="top">
+<Base title={`${AUTHOR}, front end developer in Newport, Wales`} description={description} type="profile" schema={home(description)} home bodyId="top">
 <!-- how high the kite is: a pencil scale that follows the page -->
 <div class="altitude" aria-hidden="true">
   <svg class="altitude-kite" viewBox="0 0 24 34"><path d="M12 2 L21 13 L12 26 L3 13 Z M12 2 V26 M3 13 H21 M12 26 q-3 3 0 5 q3 2 0 3"/></svg>
 </div>
 
 
-<main>
+<main id="main" tabindex="-1">
   <Hero />
   <Lift />
   <Values />
+  <Knots />
   <Line />
   <Night />
   <Shelf />

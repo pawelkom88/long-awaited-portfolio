@@ -18,7 +18,14 @@ import { ink } from "../../lib/ink";
       </div>
       <span class="ink pose" id="dozing" hidden style={`--src:url(${ink("figure-dozing")}); --ar:2427/719; top:-3.2%`}></span>
       <span class="ink pose" id="waving" hidden style={`--src:url(${ink("figure-waving")}); --ar:2452/856; top:-48.4%`}></span>
-      <span class="ink pose" id="pulling" hidden style={`--src:url(${ink("figure-pulling")}); --ar:2358/735; top:-35.4%`}></span>
+      <!-- when the knot jams, the figure leaves the ledge to help: the ledge on its own, the walk there and back, the kneel at the knot -->
+      <div class="pose helper" id="helper" hidden style="--ar:2469/705; top:0">
+        <span class="ink" style={`--src:url(${ink("hero-ground")})`}></span>
+        <span class="ink walker" style={`--src:url(${ink("helper-walk")})`}></span>
+        <span class="ink kneeler" style={`--src:url(${ink("helper-kneel")})`}></span>
+      </div>
+      <!-- the freed line slips over the edge of the ledge -->
+      <span class="ink drop" aria-hidden="true" style={`--src:url(${ink("hero-drop")}); --ar:90/400`}></span>
     </div>
     <button class="tangle" id="tangle" type="button" aria-label="Pull the loose end of the string"></button>
     <span class="sr-only" id="tangle-status" aria-live="polite"></span>
@@ -29,7 +36,13 @@ import { ink } from "../../lib/ink";
       <span class="ink" style={`--src:url(${ink("tangle-s4")}); --ar:2048/880; top:31.2%`}></span>
       <span class="ink" style={`--src:url(${ink("tangle-s5")}); --ar:2048/880; top:41.2%`}></span>
     </div></div>
-    <p class="note note-bug">most conversations start a bit knotted</p>
+    <p class="note note-bug" id="hero-note">
+      <!-- one strike per line, so the pencil mark follows the wrap; the second line is struck a beat after the first -->
+      <del><span class="sr-only">Correction: strikethrough </span><span class="m m-strike">most conversations<span class="ink strike-mark" aria-hidden="true" style={`--src:url(${ink("pencil/strike")})`}></span></span> <span class="m m-strike">start a bit knotted<span class="ink strike-mark" aria-hidden="true" style={`--src:url(${ink("pencil/strike")}); --d:.3s`}></span></span></del>
+      <ins class="note-better hand"><span class="sr-only">Correction: </span>that's better</ins>
+    </p>
     <span class="ink note-arrow" aria-hidden="true" style={`--src:url(${ink("pencil/arrow")}); --ar:199/112`}></span>
+    <p class="note note-say" id="hero-say" aria-hidden="true"></p>
+    <p class="note note-next">follow the line</p>
   </div>
 </section>

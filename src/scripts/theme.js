@@ -37,7 +37,12 @@ btn.addEventListener("click", () => {
   if (still.matches || !document.startViewTransition) return flip();
   // let the cord reach the bottom of its pull first
   setTimeout(() => {
-    document.startViewTransition(flip).ready.then(() => {
+    root.classList.add("rubbing");
+    const transition = document.startViewTransition(flip);
+    transition.finished.finally(() => {
+      root.classList.remove("rubbing");
+    });
+    transition.ready.then(() => {
       const css = getComputedStyle(root);
       const detail = { duration: +css.getPropertyValue("--rub-duration"), rows: +css.getPropertyValue("--rub-rows") };
       document.dispatchEvent(new CustomEvent("ink:rub", { detail }));
